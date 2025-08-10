@@ -9,21 +9,15 @@ import {
   Tooltip
 } from '@mui/material';
 import {
-  Settings as SettingsIcon,
-  Refresh as RefreshIcon,
-  PowerSettingsNew as DisconnectIcon,
-  Help as HelpIcon
+  PowerSettingsNew as DisconnectIcon
 } from '@mui/icons-material';
 import { useSushi } from '../contexts/SushiContext';
 import { ConnectionStatus } from './ConnectionStatus';
 
-interface ToolbarProps {
-  onOpenSettings: () => void;
-  onOpenHelp: () => void;
-}
+interface ToolbarProps {}
 
-export function Toolbar({ onOpenSettings, onOpenHelp }: ToolbarProps) {
-  const { state, disconnect, refreshData } = useSushi();
+export function Toolbar({}: ToolbarProps) {
+  const { state, disconnect } = useSushi();
 
   const formatCpuLoad = (load: number) => {
     return `${(load * 100).toFixed(1)}%`;
@@ -93,21 +87,6 @@ export function Toolbar({ onOpenSettings, onOpenHelp }: ToolbarProps) {
           
           {state.connected && (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Tooltip title="Refresh Data">
-                <IconButton color="inherit" onClick={refreshData}>
-                  <RefreshIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Help & Shortcuts">
-                <IconButton color="inherit" onClick={onOpenHelp}>
-                  <HelpIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Settings">
-                <IconButton color="inherit" onClick={onOpenSettings}>
-                  <SettingsIcon />
-                </IconButton>
-              </Tooltip>
               <Tooltip title="Disconnect">
                 <IconButton color="inherit" onClick={disconnect}>
                   <DisconnectIcon />

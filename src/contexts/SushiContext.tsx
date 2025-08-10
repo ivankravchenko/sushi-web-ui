@@ -187,19 +187,19 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
       startCpuMonitoring(service);
       
       // Start parameter monitoring
-      startParameterMonitoring(service).catch(error => 
-        console.error('Failed to start parameter monitoring:', error)
-      );
+      startParameterMonitoring(service).catch(() => {
+        // Parameter monitoring failed - handled silently
+      });
       
       // Start track monitoring
-      startTrackMonitoring(service).catch(error => 
-        console.error('Failed to start track monitoring:', error)
-      );
+      startTrackMonitoring(service).catch(() => {
+        // Track monitoring failed - handled silently
+      });
       
       // Start processor monitoring
-      startProcessorMonitoring(service).catch(error => 
-        console.error('Failed to start processor monitoring:', error)
-      );
+      startProcessorMonitoring(service).catch(() => {
+        // Processor monitoring failed - handled silently
+      });
       
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: `Connection failed: ${error}` });
@@ -271,7 +271,6 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
             
             processor.properties = processorProperties;
           } catch (error) {
-            console.warn(`Failed to get properties for processor ${proc.id}:`, error);
           }
         }
 
@@ -284,7 +283,6 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
         payload: { trackId, processors } 
       });
     } catch (error) {
-      console.error(`Failed to load processors for track ${trackId}:`, error);
     }
   };
 
@@ -326,9 +324,8 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
               }
               
               processor.properties = properties;
-              console.log(`Final properties for processor ${proc.id}:`, processor.properties);
+              // Properties loaded successfully
             } catch (error) {
-              console.warn(`Failed to get properties for processor ${proc.id}:`, error);
             }
           }
 
@@ -351,7 +348,6 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
                   initialValue = normalizedValue;
                 }
               } catch (error) {
-                console.warn(`Failed to get initial value for parameter ${param.name} on track ${trackInfo.id}:`, error);
               }
               
               return {
@@ -368,7 +364,6 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
           parameters = parametersWithValues;
 
         } catch (error) {
-          console.warn(`Failed to get track parameters for track ${trackInfo.id}:`, error);
         }
         
 
@@ -385,7 +380,6 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
       dispatch({ type: 'SET_TRACKS', payload: tracks });
       // CPU load will be updated via real-time streaming notifications
     } catch (error) {
-      console.error('Failed to load tracks from Sushi backend:', error);
       // Fallback to empty tracks on error
       dispatch({ type: 'SET_TRACKS', payload: [] });
     }
@@ -414,7 +408,6 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
         // CPU monitoring subscription cleaned up
       
     } catch (error) {
-      console.error('Failed to subscribe to CPU timings:', error);
       // No fallback - if CPU monitoring fails, leave it at 0
     }
   }, [cpuSubscription]);
@@ -447,13 +440,11 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
           }
         },
         error: (error: any) => {
-          console.error('Parameter subscription error:', error);
         }
       });
       
       setParameterSubscription(subscription);
     } catch (error) {
-      console.error('Failed to subscribe to parameter updates:', error);
     }
   }, [parameterSubscription]);
 
@@ -483,13 +474,11 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
           }
         },
         error: (error: any) => {
-          console.error('Track subscription error:', error);
         }
       });
       
       setTrackSubscription(subscription);
     } catch (error) {
-      console.error('Failed to subscribe to track changes:', error);
     }
   }, [trackSubscription]);
 
@@ -522,13 +511,11 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
           }
         },
         error: (error: any) => {
-          console.error('Processor subscription error:', error);
         }
       });
       
       setProcessorSubscription(subscription);
     } catch (error) {
-      console.error('Failed to subscribe to processor changes:', error);
     }
   }, [processorSubscription]);
 
@@ -546,7 +533,6 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
       });
 
     } catch (error) {
-      console.error('Failed to set track parameter on Sushi backend:', error);
     }
   }, [grpcService]);
 
@@ -556,7 +542,6 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
     try {
       await grpcService.createTrack(name, channels);
     } catch (error) {
-      console.error('Failed to create track:', error);
     }
   }, [grpcService]);
 
@@ -565,7 +550,6 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
     try {
       await grpcService.createMultibusTrack(name, buses);
     } catch (error) {
-      console.error('Failed to create multibus track:', error);
     }
   }, [grpcService]);
 
@@ -574,7 +558,6 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
     try {
       await grpcService.createPreTrack(name);
     } catch (error) {
-      console.error('Failed to create pre track:', error);
     }
   }, [grpcService]);
 
@@ -583,7 +566,6 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
     try {
       await grpcService.createPostTrack(name);
     } catch (error) {
-      console.error('Failed to create post track:', error);
     }
   }, [grpcService]);
 
@@ -592,7 +574,6 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
     try {
       await grpcService.deleteTrack(trackId);
     } catch (error) {
-      console.error('Failed to delete track:', error);
     }
   }, [grpcService]);
 
@@ -601,7 +582,6 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
     try {
       await grpcService.createProcessor(name, uid, path, type, trackId);
     } catch (error) {
-      console.error('Failed to create processor:', error);
     }
   }, [grpcService]);
 
@@ -610,7 +590,6 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
     try {
       await grpcService.deleteProcessor(processorId, trackId);
     } catch (error) {
-      console.error('Failed to delete processor:', error);
     }
   }, [grpcService]);
 
@@ -619,7 +598,6 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
     try {
       await grpcService.moveProcessor(processorId, sourceTrackId, destTrackId, addToBack, beforeProcessorId);
     } catch (error) {
-      console.error('Failed to move processor:', error);
     }
   }, [grpcService]);
 

@@ -73,7 +73,6 @@ export class SushiGrpcService {
       await this.systemController.GetSushiVersion({});
       return true;
     } catch (error) {
-      console.error('Connection test failed:', error);
       return false;
     }
   }
@@ -96,7 +95,6 @@ export class SushiGrpcService {
         outputChannels: outputChannelsResponse.value
       };
     } catch (error) {
-      console.error('Failed to get engine info:', error);
       throw error;
     }
   }
@@ -108,7 +106,6 @@ export class SushiGrpcService {
       // This is a placeholder for the streaming implementation
       throw new Error('CPU timings should be subscribed to via streaming');
     } catch (error) {
-      console.error('Failed to get CPU timings:', error);
       throw error;
     }
   }
@@ -124,7 +121,6 @@ export class SushiGrpcService {
           callback(update);
         },
         error: (error: any) => {
-          console.error('CPU timing stream error:', error);
         },
         complete: () => {
 
@@ -133,7 +129,6 @@ export class SushiGrpcService {
       
       return subscription;
     } catch (error) {
-      console.error('Failed to subscribe to CPU timings:', error);
       throw error;
     }
   }
@@ -146,7 +141,6 @@ export class SushiGrpcService {
         tracks: response.tracks
       };
     } catch (error) {
-      console.error('Failed to get tracks:', error);
       throw error;
     }
   }
@@ -160,7 +154,6 @@ export class SushiGrpcService {
         processors: response.processors
       };
     } catch (error) {
-      console.error(`Failed to get processors on track ${trackId}:`, error);
       throw error;
     }
   }
@@ -174,7 +167,6 @@ export class SushiGrpcService {
         parameters: response.parameters
       };
     } catch (error) {
-      console.error(`Failed to get parameters for processor ${processorId}:`, error);
       throw error;
     }
   }
@@ -188,7 +180,6 @@ export class SushiGrpcService {
         parameters: response.parameters
       };
     } catch (error) {
-      console.error(`Failed to get parameters for track ${trackId}:`, error);
       throw error;
     }
   }
@@ -208,7 +199,6 @@ export class SushiGrpcService {
       await this.parameterController.SetParameterValue(parameterValue);
 
     } catch (error) {
-      console.error(`Failed to set parameter ${parameterId} on processor ${processorId}:`, error);
       throw error;
     }
   }
@@ -229,7 +219,6 @@ export class SushiGrpcService {
       await this.parameterController.SetParameterValue(parameterValue);
 
     } catch (error) {
-      console.error(`Failed to set track parameter ${parameterId} on track ${trackId}:`, error);
       throw error;
     }
   }
@@ -243,7 +232,6 @@ export class SushiGrpcService {
       const response = await this.parameterController.GetProcessorProperties(processorIdentifier);
       return response;
     } catch (error) {
-      console.error(`Failed to get properties for processor ${processorId}:`, error);
       throw error;
     }
   }
@@ -267,7 +255,6 @@ export class SushiGrpcService {
       const response = await this.parameterController.GetPropertyValue(propertyIdentifier);
       return response.value || null;
     } catch (error) {
-      console.error(`Failed to get property ${propertyName} for processor ${processorId}:`, error);
       return null;
     }
   }
@@ -280,7 +267,6 @@ export class SushiGrpcService {
       });
       return response.value ?? null;
     } catch (error) {
-      console.error(`Failed to get parameter value for processor ${processorId}, parameter ${parameterId}:`, error);
       return null;
     }
   }
@@ -293,7 +279,6 @@ export class SushiGrpcService {
       });
       return response.value ?? null;
     } catch (error) {
-      console.error(`Failed to get parameter domain value for processor ${processorId}, parameter ${parameterId}:`, error);
       return null;
     }
   }
@@ -367,7 +352,6 @@ export class SushiGrpcService {
     try {
       await this.transportController.SetPlayingMode({ mode: 2 }); // PLAYING = 2
     } catch (error) {
-      console.error('Failed to start playback:', error);
       throw error;
     }
   }
@@ -377,7 +361,6 @@ export class SushiGrpcService {
       await this.transportController.SetPlayingMode({ mode: 1 }); // STOPPED = 1
 
     } catch (error) {
-      console.error('Failed to stop playback:', error);
       throw error;
     }
   }
@@ -387,7 +370,6 @@ export class SushiGrpcService {
       const response = await this.transportController.GetPlayingMode({});
       return response.mode;
     } catch (error) {
-      console.error('Failed to get playing mode:', error);
       throw error;
     }
   }

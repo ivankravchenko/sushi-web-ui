@@ -43,14 +43,7 @@ function AppContent() {
     }
   }, [state.connected, state.connecting]);
 
-  const handleOpenSettings = () => {
-    // Settings dialog will be implemented later
 
-  };
-
-  const handleOpenHelp = () => {
-    setHelpDialogOpen(true);
-  };
 
   const handleOpenConnection = () => {
     setConnectionDialogOpen(true);
@@ -71,7 +64,7 @@ function AppContent() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      <Toolbar onOpenSettings={handleOpenSettings} onOpenHelp={handleOpenHelp} />
+      <Toolbar />
       
       <Box sx={{ flex: 1, overflow: 'hidden' }}>
         {state.connected ? (

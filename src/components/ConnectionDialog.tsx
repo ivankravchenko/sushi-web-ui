@@ -42,7 +42,7 @@ export function ConnectionDialog({ open, onClose }: ConnectionDialogProps) {
     try {
       await connect(url.trim());
     } catch (error) {
-      console.error('Connection failed:', error);
+      // Connection failed - error handling will be done by the connect function
     }
   };
 

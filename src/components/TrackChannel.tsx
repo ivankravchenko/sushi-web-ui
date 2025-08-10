@@ -18,7 +18,7 @@ interface TrackChannelProps {
   onMoveProcessor: (processorId: number, sourceTrackId: number, destTrackId: number, addToBack?: boolean, beforeProcessorId?: number) => void;
 }
 
-export function TrackChannel({ track, onParameterChange, onSoloTrack, isSoloed, onCreateProcessor, onDeleteProcessor, onMoveProcessor }: TrackChannelProps) {
+export function TrackChannel({ track, onParameterChange, onSoloTrack, isSoloed, onCreateProcessor, onDeleteProcessor }: TrackChannelProps) {
   const getLevelParameter = () => {
     return track.parameters.find(p => 
       p.name.toLowerCase() === 'gain'

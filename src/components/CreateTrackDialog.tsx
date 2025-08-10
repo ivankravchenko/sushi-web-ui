@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -28,13 +28,37 @@ export function CreateTrackDialog({ open, onClose }: CreateTrackDialogProps) {
   const [trackType, setTrackType] = useState<TrackType>('stereo');
   const [stereoBuses, setStereoBuses] = useState(1);
   const [isCreating, setIsCreating] = useState(false);
+  const nameFieldRef = useRef<HTMLInputElement>(null);
 
-  const handleClose = () => {
-    if (!isCreating) {
+  // Focus on track name field when dialog opens
+  useEffect(() => {
+    if (open) {
+      // Reset form when dialog opens
       setTrackName('');
       setTrackType('stereo');
       setStereoBuses(1);
+      
+      // Focus with delay to ensure dialog is fully rendered
+      const focusTimeout = setTimeout(() => {
+        if (nameFieldRef.current) {
+          nameFieldRef.current.focus();
+          nameFieldRef.current.select();
+        }
+      }, 200);
+      
+      return () => clearTimeout(focusTimeout);
+    }
+  }, [open]);
+
+  const handleClose = () => {
+    if (!isCreating) {
       onClose();
+    }
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' && !isCreating) {
+      handleCreate();
     }
   };
 
@@ -62,7 +86,7 @@ export function CreateTrackDialog({ open, onClose }: CreateTrackDialogProps) {
       }
       handleClose();
     } catch (error) {
-      console.error('Failed to create track:', error);
+      // TODO: Show error message to user
     } finally {
       setIsCreating(false);
     }
@@ -73,14 +97,18 @@ export function CreateTrackDialog({ open, onClose }: CreateTrackDialogProps) {
       <DialogTitle>Create New Track</DialogTitle>
       <DialogContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 1 }}>
-          <TextField
-            label="Track Name"
-            value={trackName}
-            onChange={(e) => setTrackName(e.target.value)}
-            fullWidth
-            required
-            disabled={isCreating}
-          />
+            <TextField
+              inputRef={nameFieldRef}
+              autoFocus
+              margin="dense"
+              label="Track Name"
+              fullWidth
+              variant="outlined"
+              value={trackName}
+              onChange={(e) => setTrackName(e.target.value)}
+              onKeyPress={handleKeyPress}
+              disabled={isCreating}
+            />
           
           <FormControl fullWidth disabled={isCreating}>
             <InputLabel>Track Type</InputLabel>

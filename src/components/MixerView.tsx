@@ -16,7 +16,7 @@ import { ProcessorCard } from './ProcessorCard';
 import type { Processor } from '../contexts/SushiContext';
 
 export function MixerView() {
-  const { state, setParameterValue, deleteTrack, createProcessor, deleteProcessor, moveProcessor } = useSushi();
+  const { state, setParameterValue, deleteTrack, deleteProcessor, moveProcessor } = useSushi();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [soloedTrackId, setSoloedTrackId] = useState<number | null>(null);
   const [createProcessorDialogOpen, setCreateProcessorDialogOpen] = useState(false);

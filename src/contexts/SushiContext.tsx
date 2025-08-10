@@ -141,6 +141,9 @@ interface SushiContextType {
   createPreTrack: (name: string) => Promise<void>;
   createPostTrack: (name: string) => Promise<void>;
   deleteTrack: (trackId: number) => Promise<void>;
+  createProcessor: (name: string, uid: string, path: string, type: number, trackId: number) => Promise<void>;
+  deleteProcessor: (processorId: number, trackId: number) => Promise<void>;
+  moveProcessor: (processorId: number, sourceTrackId: number, destTrackId: number, addToBack?: boolean, beforeProcessorId?: number) => Promise<void>;
 }
 
 const SushiContext = createContext<SushiContextType | null>(null);
@@ -593,6 +596,33 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
     }
   }, [grpcService]);
 
+  const createProcessor = useCallback(async (name: string, uid: string, path: string, type: number, trackId: number) => {
+    if (!grpcService) return;
+    try {
+      await grpcService.createProcessor(name, uid, path, type, trackId);
+    } catch (error) {
+      console.error('Failed to create processor:', error);
+    }
+  }, [grpcService]);
+
+  const deleteProcessor = useCallback(async (processorId: number, trackId: number) => {
+    if (!grpcService) return;
+    try {
+      await grpcService.deleteProcessor(processorId, trackId);
+    } catch (error) {
+      console.error('Failed to delete processor:', error);
+    }
+  }, [grpcService]);
+
+  const moveProcessor = useCallback(async (processorId: number, sourceTrackId: number, destTrackId: number, addToBack: boolean = true, beforeProcessorId?: number) => {
+    if (!grpcService) return;
+    try {
+      await grpcService.moveProcessor(processorId, sourceTrackId, destTrackId, addToBack, beforeProcessorId);
+    } catch (error) {
+      console.error('Failed to move processor:', error);
+    }
+  }, [grpcService]);
+
   const contextValue: SushiContextType = {
     state,
     connect,
@@ -604,6 +634,9 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
     createPreTrack,
     createPostTrack,
     deleteTrack,
+    createProcessor,
+    deleteProcessor,
+    moveProcessor,
   };
 
   return (

@@ -1,13 +1,11 @@
-
 import {
   Box,
   Paper,
   Typography,
   Slider,
-  Card,
-  CardContent,
   Button
 } from '@mui/material';
+import { ProcessorList } from './ProcessorList';
 import type { Track } from '../contexts/SushiContext';
 
 interface TrackChannelProps {
@@ -15,9 +13,12 @@ interface TrackChannelProps {
   onParameterChange: (trackId: number, parameterId: number, value: number) => void;
   onSoloTrack: (trackId: number) => void;
   isSoloed: boolean;
+  onCreateProcessor: (trackId: number) => void;
+  onDeleteProcessor: (processorId: number, trackId: number) => void;
+  onMoveProcessor: (processorId: number, sourceTrackId: number, destTrackId: number, addToBack?: boolean, beforeProcessorId?: number) => void;
 }
 
-export function TrackChannel({ track, onParameterChange, onSoloTrack, isSoloed }: TrackChannelProps) {
+export function TrackChannel({ track, onParameterChange, onSoloTrack, isSoloed, onCreateProcessor, onDeleteProcessor, onMoveProcessor }: TrackChannelProps) {
   const getLevelParameter = () => {
     return track.parameters.find(p => 
       p.name.toLowerCase() === 'gain'
@@ -96,51 +97,13 @@ export function TrackChannel({ track, onParameterChange, onSoloTrack, isSoloed }
       }}
     >
       {/* Processors */}
-      <Box sx={{ mb: 2, flexGrow: 1 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          {track.processors.map((processor) => {
-            // Special handling for send and return processors
-            let displayText = processor.label;
-            
-            if (processor.label === 'Send') {
-              // For send processors: <label> → <destination_name>
-              const destinationName = processor.properties?.destination_name;
-              if (destinationName) {
-                displayText = `${processor.label} → ${destinationName}`;
-              } else {
-                displayText = `${processor.label} →`;
-              }
-            } else if (processor.label === 'Return') {
-              // For return processors: <label> (<name>)
-              displayText = `${processor.label} (${processor.name})`;
-            }
-            
-            return (
-              <Card key={processor.id} variant="outlined" sx={{ minHeight: 40 }}>
-                <CardContent sx={{ p: 1, '&:last-child': { pb: 1 } }}>
-                  <Typography 
-                    variant="caption" 
-                    sx={{ 
-                      fontSize: '0.7rem',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      display: 'block'
-                    }}
-                  >
-                    {displayText}
-                  </Typography>
-                </CardContent>
-              </Card>
-            );
-          })}
-          {track.processors.length === 0 && (
-            <Typography variant="caption" color="text.secondary" align="center">
-              No processors
-            </Typography>
-          )}
-        </Box>
-      </Box>
+      <ProcessorList
+        processors={track.processors}
+        trackId={track.id}
+        trackName={track.name}
+        onCreateProcessor={onCreateProcessor}
+        onDeleteProcessor={onDeleteProcessor}
+      />
 
       {/* Pan Control */}
       {panParam && (

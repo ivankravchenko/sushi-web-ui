@@ -334,6 +334,34 @@ export class SushiGrpcService {
     return this.notificationController.SubscribeToProcessorChanges(request);
   }
 
+  // Processor management methods
+  async createProcessor(name: string, uid: string, path: string, type: number, trackId: number, addToBack: boolean = true): Promise<void> {
+    await this.audioGraphController.CreateProcessorOnTrack({
+      name,
+      uid,
+      path,
+      type: { type },
+      track: { id: trackId },
+      position: { addToBack, beforeProcessor: undefined }
+    });
+  }
+
+  async deleteProcessor(processorId: number, trackId: number): Promise<void> {
+    await this.audioGraphController.DeleteProcessorFromTrack({
+      processor: { id: processorId },
+      track: { id: trackId }
+    });
+  }
+
+  async moveProcessor(processorId: number, sourceTrackId: number, destTrackId: number, addToBack: boolean = true, beforeProcessorId?: number): Promise<void> {
+    await this.audioGraphController.MoveProcessorOnTrack({
+      processor: { id: processorId },
+      sourceTrack: { id: sourceTrackId },
+      destTrack: { id: destTrackId },
+      position: { addToBack, beforeProcessor: beforeProcessorId ? { id: beforeProcessorId } : undefined }
+    });
+  }
+
   // Transport controls
   async play(): Promise<void> {
     try {

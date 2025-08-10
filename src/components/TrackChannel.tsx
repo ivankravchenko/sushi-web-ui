@@ -13,10 +13,11 @@ import type { Track } from '../contexts/SushiContext';
 interface TrackChannelProps {
   track: Track;
   onParameterChange: (trackId: number, parameterId: number, value: number) => void;
-  onDeleteTrack: (trackId: number) => void;
+  onSoloTrack: (trackId: number) => void;
+  isSoloed: boolean;
 }
 
-export function TrackChannel({ track, onParameterChange, onDeleteTrack }: TrackChannelProps) {
+export function TrackChannel({ track, onParameterChange, onSoloTrack, isSoloed }: TrackChannelProps) {
   const getLevelParameter = () => {
     return track.parameters.find(p => 
       p.name.toLowerCase() === 'gain'
@@ -174,18 +175,32 @@ export function TrackChannel({ track, onParameterChange, onDeleteTrack }: TrackC
             {formatParameterValue(levelParam)}
           </Typography>
           
-          {/* Mute Button */}
-          {muteParam && (
+          {/* Mute and Solo Buttons */}
+          <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+            {/* Mute Button */}
+            {muteParam && (
+              <Button
+                variant={muteParam.value > 0.5 ? "contained" : "outlined"}
+                color={muteParam.value > 0.5 ? "error" : "primary"}
+                size="small"
+                onClick={handleMuteToggle}
+                sx={{ minWidth: 32, width: 32, height: 32 }}
+              >
+                M
+              </Button>
+            )}
+            
+            {/* Solo Button */}
             <Button
-              variant={muteParam.value > 0.5 ? "contained" : "outlined"}
-              color={muteParam.value > 0.5 ? "error" : "primary"}
+              variant={isSoloed ? "contained" : "outlined"}
+              color={isSoloed ? "warning" : "primary"}
               size="small"
-              onClick={handleMuteToggle}
-              sx={{ mt: 1, minWidth: 60 }}
+              onClick={() => onSoloTrack(track.id)}
+              sx={{ minWidth: 32, width: 32, height: 32 }}
             >
-              {muteParam.value > 0.5 ? "MUTED" : "MUTE"}
+              S
             </Button>
-          )}
+          </Box>
         </Box>
       )}
 
@@ -203,17 +218,6 @@ export function TrackChannel({ track, onParameterChange, onDeleteTrack }: TrackC
         >
           {track.name}
         </Typography>
-        
-        {/* Delete Button */}
-        <Button
-          variant="outlined"
-          color="error"
-          size="small"
-          onClick={() => onDeleteTrack(track.id)}
-          sx={{ mt: 1, width: '100%' }}
-        >
-          Delete
-        </Button>
       </Box>
     </Paper>
   );

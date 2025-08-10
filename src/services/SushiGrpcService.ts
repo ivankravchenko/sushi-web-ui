@@ -178,7 +178,21 @@ export class SushiGrpcService {
     }
   }
 
-  // Set parameter value
+  // Get parameters for a specific track (track-level controls like level and pan)
+  async getTrackParameters(trackId: number): Promise<ParametersResponse> {
+    try {
+      const trackIdentifier: TrackIdentifier = { id: trackId };
+      const response = await this.parameterController.GetTrackParameters(trackIdentifier);
+      return {
+        parameters: response.parameters
+      };
+    } catch (error) {
+      console.error(`Failed to get parameters for track ${trackId}:`, error);
+      throw error;
+    }
+  }
+
+  // Set parameter value (for processor parameters)
   async setParameterValue(processorId: number, parameterId: number, value: number): Promise<void> {
     try {
       const parameterIdentifier: ParameterIdentifier = { 
@@ -187,13 +201,34 @@ export class SushiGrpcService {
       };
       const parameterValue: ParameterValue = {
         parameter: parameterIdentifier,
-        value
+        value: value
       };
       
       await this.parameterController.SetParameterValue(parameterValue);
 
     } catch (error) {
       console.error(`Failed to set parameter ${parameterId} on processor ${processorId}:`, error);
+      throw error;
+    }
+  }
+
+  // Set track-level parameter value (for track parameters like gain, pan, mute)
+  async setTrackParameterValue(trackId: number, parameterId: number, value: number): Promise<void> {
+    try {
+      // For track-level parameters, use the track ID as the processorId
+      const parameterIdentifier: ParameterIdentifier = { 
+        processorId: trackId, // Use track ID to distinguish between tracks
+        parameterId 
+      };
+      const parameterValue: ParameterValue = {
+        parameter: parameterIdentifier,
+        value: value
+      };
+      
+      await this.parameterController.SetParameterValue(parameterValue);
+
+    } catch (error) {
+      console.error(`Failed to set track parameter ${parameterId} on track ${trackId}:`, error);
       throw error;
     }
   }

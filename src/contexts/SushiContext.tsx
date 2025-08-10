@@ -11,6 +11,7 @@ export interface Track {
 export interface Processor {
   id: number;
   name: string;
+  label: string;
   trackId: number;
 }
 
@@ -173,30 +174,35 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
         // Get processors for this track
         const processorsResponse = await service.getProcessorsOnTrack(trackInfo.id);
         
+
+        
         // Get parameters for this track (using processor parameters instead)
         const processors: Processor[] = processorsResponse.processors.map((proc: any) => ({
           id: proc.id,
           name: proc.name,
+          label: proc.label,
           trackId: trackInfo.id
         }));
         
-        // For now, we'll get parameters from the first processor if available
+        // Get track-level parameters (level, pan, etc.)
         let parameters: Parameter[] = [];
-        if (processors.length > 0) {
-          try {
-            const parametersResponse = await service.getProcessorParameters(processors[0].id);
-            parameters = parametersResponse.parameters.map((param: any) => ({
-              parameterId: param.id,
-              name: param.name,
-              value: 0, // Will be updated via real parameter values
-              minValue: param.minDomainValue,
-              maxValue: param.maxDomainValue,
-              unit: param.unit
-            }));
-          } catch (error) {
-            console.warn(`Failed to get parameters for processor ${processors[0].id}:`, error);
-          }
+        try {
+          const trackParametersResponse = await service.getTrackParameters(trackInfo.id);
+          parameters = trackParametersResponse.parameters.map((param: any) => ({
+            parameterId: param.id,
+            name: param.name,
+            value: 0, // Will be updated via real parameter values
+            minValue: param.minDomainValue,
+            maxValue: param.maxDomainValue,
+            unit: param.unit
+          }));
+          
+
+        } catch (error) {
+          console.warn(`Failed to get track parameters for track ${trackInfo.id}:`, error);
         }
+        
+
 
         
         tracks.push({
@@ -208,7 +214,7 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
       }
       
       dispatch({ type: 'SET_TRACKS', payload: tracks });
-      dispatch({ type: 'SET_CPU_LOAD', payload: 0.25 }); // Will be updated via notifications
+      // CPU load will be updated via real-time streaming notifications
     } catch (error) {
       console.error('Failed to load tracks from Sushi backend:', error);
       // Fallback to empty tracks on error
@@ -240,20 +246,7 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
       
     } catch (error) {
       console.error('Failed to subscribe to CPU timings:', error);
-      // Fallback to mock updates if streaming fails
-      const updateCpuLoad = () => {
-        const mockLoad = 0.15 + Math.random() * 0.1; // 15-25% mock load
-        dispatch({ type: 'SET_CPU_LOAD', payload: mockLoad });
-      };
-      
-      // Initial update
-      updateCpuLoad();
-      
-      // Set up periodic updates
-      const intervalId = setInterval(updateCpuLoad, 2000);
-      
-      // Store interval for cleanup
-      setCpuSubscription({ unsubscribe: () => clearInterval(intervalId) });
+      // No fallback - if CPU monitoring fails, leave it at 0
     }
   }, [cpuSubscription]);
 
@@ -261,30 +254,19 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
     if (!grpcService) return;
     
     try {
-      // For now, we need to find the processor ID from the track
-      // This is a simplified approach - in a real app you'd track processor IDs properly
-      const tracks = state.tracks.find(t => t.id === trackId);
-      if (!tracks || tracks.processors.length === 0) {
-        console.warn(`No processors found for track ${trackId}`);
-        return;
-      }
-      
-      const processorId = tracks.processors[0].id;
-      
-      // Update parameter on real Sushi backend
-      await grpcService.setParameterValue(processorId, parameterId, value);
+      // Use track-level parameter method for track parameters (gain, pan, mute)
+      await grpcService.setTrackParameterValue(trackId, parameterId, value);
       
       // Update parameter locally to reflect the change immediately
       dispatch({
         type: 'UPDATE_PARAMETER',
         payload: { trackId, parameterId, value }
       });
-      
 
     } catch (error) {
-      console.error('Failed to set parameter on Sushi backend:', error);
+      console.error('Failed to set track parameter on Sushi backend:', error);
     }
-  }, [grpcService, state.tracks]);
+  }, [grpcService]);
 
   const contextValue: SushiContextType = {
     state,

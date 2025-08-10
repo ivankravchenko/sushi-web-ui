@@ -6,7 +6,7 @@ import {
   Slider,
   Card,
   CardContent,
-  Chip
+  Button
 } from '@mui/material';
 import type { Track } from '../contexts/SushiContext';
 
@@ -18,39 +18,67 @@ interface TrackChannelProps {
 export function TrackChannel({ track, onParameterChange }: TrackChannelProps) {
   const getLevelParameter = () => {
     return track.parameters.find(p => 
-      p.name.toLowerCase().includes('level') || 
-      p.name.toLowerCase().includes('gain') ||
-      p.name.toLowerCase().includes('volume')
+      p.name.toLowerCase() === 'gain'
     );
   };
 
   const getPanParameter = () => {
     return track.parameters.find(p => 
-      p.name.toLowerCase().includes('pan') || 
-      p.name.toLowerCase().includes('balance')
+      p.name.toLowerCase() === 'pan'
+    );
+  };
+
+  const getMuteParameter = () => {
+    return track.parameters.find(p => 
+      p.name.toLowerCase() === 'mute'
     );
   };
 
   const levelParam = getLevelParameter();
   const panParam = getPanParameter();
+  const muteParam = getMuteParameter();
 
-  const handleLevelChange = (value: number) => {
+  // Helper functions for parameter value conversion
+  // Sushi uses normalized values (0.0-1.0) internally
+  const normalizedToDomain = (normalizedValue: number, minDomain: number, maxDomain: number): number => {
+    return minDomain + (normalizedValue * (maxDomain - minDomain));
+  };
+
+  const domainToNormalized = (domainValue: number, minDomain: number, maxDomain: number): number => {
+    return (domainValue - minDomain) / (maxDomain - minDomain);
+  };
+
+  const handleLevelChange = (domainValue: number) => {
     if (levelParam) {
-      onParameterChange(track.id, levelParam.parameterId, value);
+      // Convert domain value to normalized value for Sushi
+      const normalizedValue = domainToNormalized(domainValue, levelParam.minValue, levelParam.maxValue);
+      onParameterChange(track.id, levelParam.parameterId, normalizedValue);
     }
   };
 
-  const handlePanChange = (value: number) => {
+  const handlePanChange = (domainValue: number) => {
     if (panParam) {
-      onParameterChange(track.id, panParam.parameterId, value);
+      // Convert domain value to normalized value for Sushi
+      const normalizedValue = domainToNormalized(domainValue, panParam.minValue, panParam.maxValue);
+      onParameterChange(track.id, panParam.parameterId, normalizedValue);
+    }
+  };
+
+  const handleMuteToggle = () => {
+    if (muteParam) {
+      // For mute, toggle between 0.0 and 1.0 (already normalized)
+      const newNormalizedValue = muteParam.value > 0.5 ? 0.0 : 1.0;
+      onParameterChange(track.id, muteParam.parameterId, newNormalizedValue);
     }
   };
 
   const formatParameterValue = (param: any) => {
+    // Convert normalized value to domain value for display
+    const domainValue = normalizedToDomain(param.value, param.minValue, param.maxValue);
     if (param.unit) {
-      return `${param.value.toFixed(2)} ${param.unit}`;
+      return `${domainValue.toFixed(2)} ${param.unit}`;
     }
-    return param.value.toFixed(2);
+    return domainValue.toFixed(2);
   };
 
   return (
@@ -65,45 +93,34 @@ export function TrackChannel({ track, onParameterChange }: TrackChannelProps) {
         minHeight: 600
       }}
     >
-      {/* Track Name */}
-      <Typography 
-        variant="subtitle2" 
-        align="center" 
-        sx={{ 
-          mb: 2, 
-          fontWeight: 'bold',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap'
-        }}
-      >
-        {track.name}
-      </Typography>
-
       {/* Processors */}
       <Box sx={{ mb: 2, flexGrow: 1 }}>
-        <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
-          Processors
-        </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          {track.processors.map((processor) => (
-            <Card key={processor.id} variant="outlined" sx={{ minHeight: 40 }}>
-              <CardContent sx={{ p: 1, '&:last-child': { pb: 1 } }}>
-                <Typography 
-                  variant="caption" 
-                  sx={{ 
-                    fontSize: '0.7rem',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    display: 'block'
-                  }}
-                >
-                  {processor.name}
-                </Typography>
-              </CardContent>
-            </Card>
-          ))}
+          {track.processors.map((processor) => {
+            // Special handling for "return" processors - show "Return (name)"
+            const displayText = processor.name === 'return' 
+              ? `Return (${processor.label})`
+              : processor.label;
+            
+            return (
+              <Card key={processor.id} variant="outlined" sx={{ minHeight: 40 }}>
+                <CardContent sx={{ p: 1, '&:last-child': { pb: 1 } }}>
+                  <Typography 
+                    variant="caption" 
+                    sx={{ 
+                      fontSize: '0.7rem',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      display: 'block'
+                    }}
+                  >
+                    {displayText}
+                  </Typography>
+                </CardContent>
+              </Card>
+            );
+          })}
           {track.processors.length === 0 && (
             <Typography variant="caption" color="text.secondary" align="center">
               No processors
@@ -115,25 +132,15 @@ export function TrackChannel({ track, onParameterChange }: TrackChannelProps) {
       {/* Pan Control */}
       {panParam && (
         <Box sx={{ mb: 2 }}>
-          <Typography variant="caption" color="text.secondary" align="center" sx={{ display: 'block', mb: 1 }}>
-            Pan
-          </Typography>
           <Box sx={{ px: 1 }}>
             <Slider
-              value={panParam.value}
+              value={normalizedToDomain(panParam.value, panParam.minValue, panParam.maxValue)}
               min={panParam.minValue}
               max={panParam.maxValue}
               onChange={(_, value) => handlePanChange(value as number)}
               size="small"
-              marks={[
-                { value: panParam.minValue, label: 'L' },
-                { value: (panParam.minValue + panParam.maxValue) / 2, label: 'C' },
-                { value: panParam.maxValue, label: 'R' }
-              ]}
+              step={0.01}
             />
-            <Typography variant="caption" align="center" sx={{ display: 'block', mt: 0.5 }}>
-              {formatParameterValue(panParam)}
-            </Typography>
           </Box>
         </Box>
       )}
@@ -141,13 +148,10 @@ export function TrackChannel({ track, onParameterChange }: TrackChannelProps) {
       {/* Level Fader */}
       {levelParam && (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: 200 }}>
-          <Typography variant="caption" color="text.secondary" sx={{ mb: 1 }}>
-            Level
-          </Typography>
           <Box sx={{ height: 150, display: 'flex', justifyContent: 'center' }}>
             <Slider
               orientation="vertical"
-              value={levelParam.value}
+              value={normalizedToDomain(levelParam.value, levelParam.minValue, levelParam.maxValue)}
               min={levelParam.minValue}
               max={levelParam.maxValue}
               onChange={(_, value) => handleLevelChange(value as number)}
@@ -157,17 +161,36 @@ export function TrackChannel({ track, onParameterChange }: TrackChannelProps) {
           <Typography variant="caption" align="center" sx={{ mt: 1 }}>
             {formatParameterValue(levelParam)}
           </Typography>
+          
+          {/* Mute Button */}
+          {muteParam && (
+            <Button
+              variant={muteParam.value > 0.5 ? "contained" : "outlined"}
+              color={muteParam.value > 0.5 ? "error" : "primary"}
+              size="small"
+              onClick={handleMuteToggle}
+              sx={{ mt: 1, minWidth: 60 }}
+            >
+              {muteParam.value > 0.5 ? "MUTED" : "MUTE"}
+            </Button>
+          )}
         </Box>
       )}
 
-      {/* Track ID Chip */}
+      {/* Track Name - moved to bottom */}
       <Box sx={{ mt: 'auto', pt: 1 }}>
-        <Chip 
-          label={`ID: ${track.id}`} 
-          size="small" 
-          variant="outlined" 
-          sx={{ width: '100%' }}
-        />
+        <Typography 
+          variant="subtitle2" 
+          align="center" 
+          sx={{ 
+            fontWeight: 'bold',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          {track.name}
+        </Typography>
       </Box>
     </Paper>
   );

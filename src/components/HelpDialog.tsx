@@ -59,7 +59,7 @@ export function HelpDialog({ open, onClose }: HelpDialogProps) {
       </DialogTitle>
       <DialogContent>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          Use these keyboard shortcuts to quickly control the Sushi Web UI.
+          Use these keyboard shortcuts to quickly control Sushi.
         </Typography>
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>

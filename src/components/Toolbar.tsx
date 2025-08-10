@@ -36,8 +36,8 @@ export function Toolbar({ onOpenSettings, onOpenHelp }: ToolbarProps) {
   return (
     <AppBar position="static" elevation={1}>
       <MuiToolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Sushi Web UI
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1, mr: 3 }}>
+          Sushi
         </Typography>
         
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -66,6 +66,24 @@ export function Toolbar({ onOpenSettings, onOpenHelp }: ToolbarProps) {
               />
               <Chip
                 label={`Processors: ${getTotalProcessors()}`}
+                size="small"
+                variant="outlined"
+                sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}
+              />
+              <Chip
+                label={`Sample Rate: ${state.engineInfo?.sampleRate ? `${state.engineInfo.sampleRate} Hz` : 'Unknown'}`}
+                size="small"
+                variant="outlined"
+                sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}
+              />
+              <Chip
+                label={`In: ${state.engineInfo?.inputChannels ?? 'Unknown'}`}
+                size="small"
+                variant="outlined"
+                sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}
+              />
+              <Chip
+                label={`Out: ${state.engineInfo?.outputChannels ?? 'Unknown'}`}
                 size="small"
                 variant="outlined"
                 sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}

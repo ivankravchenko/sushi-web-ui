@@ -10,10 +10,13 @@ import {
   TrackInfo, 
   ProcessorInfo, 
   ParameterInfo,
+  PropertyInfo,
   TrackIdentifier,
   ProcessorIdentifier,
   ParameterIdentifier,
-  ParameterValue
+  PropertyIdentifier,
+  ParameterValue,
+  PropertyValue
 } from '../../codegen-grpc/sushi_rpc';
 import { grpc } from '@improbable-eng/grpc-web';
 import { Observable } from 'rxjs';
@@ -37,6 +40,10 @@ export interface ProcessorsResponse {
 
 export interface ParametersResponse {
   parameters: ParameterInfo[];
+}
+
+export interface PropertiesResponse {
+  properties: PropertyInfo[];
 }
 
 export interface CpuTimingResponse {
@@ -226,11 +233,13 @@ export class SushiGrpcService {
 
 
   // Get processor properties
-  async getProcessorProperties(processorId: number): Promise<any> {
+  async getProcessorProperties(processorId: number): Promise<PropertiesResponse> {
     try {
       const processorIdentifier: ProcessorIdentifier = { id: processorId };
       const response = await this.parameterController.GetProcessorProperties(processorIdentifier);
-      return response;
+      return {
+        properties: response.properties
+      };
     } catch (error) {
       throw error;
     }
@@ -241,14 +250,14 @@ export class SushiGrpcService {
     try {
       // First get all properties to find the property ID
       const propertiesResponse = await this.getProcessorProperties(processorId);
-      const property = propertiesResponse.properties?.find((p: any) => p.name === propertyName);
+      const property = propertiesResponse.properties?.find((p: PropertyInfo) => p.name === propertyName);
       
       if (!property) {
         return null;
       }
 
       // Get the property value
-      const propertyIdentifier = { 
+      const propertyIdentifier: PropertyIdentifier = { 
         processorId, 
         propertyId: property.id 
       };
@@ -256,6 +265,32 @@ export class SushiGrpcService {
       return response.value || null;
     } catch (error) {
       return null;
+    }
+  }
+
+  // Set property value by name
+  async setPropertyValue(processorId: number, propertyName: string, value: string): Promise<void> {
+    try {
+      // First get all properties to find the property ID
+      const propertiesResponse = await this.getProcessorProperties(processorId);
+      const property = propertiesResponse.properties?.find((p: PropertyInfo) => p.name === propertyName);
+      
+      if (!property) {
+        throw new Error(`Property ${propertyName} not found`);
+      }
+
+      // Set the property value
+      const propertyValue: PropertyValue = {
+        property: {
+          processorId,
+          propertyId: property.id
+        },
+        value: value
+      };
+      
+      await this.parameterController.SetPropertyValue(propertyValue);
+    } catch (error) {
+      throw error;
     }
   }
 

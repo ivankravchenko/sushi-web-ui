@@ -8,6 +8,7 @@ import { Remove as RemoveIcon } from '@mui/icons-material';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { Processor } from '../contexts/SushiContext';
+import { ProcessorDialog } from './ProcessorDialog';
 
 interface ProcessorCardProps {
   processor: Processor;
@@ -17,6 +18,7 @@ interface ProcessorCardProps {
 
 export function ProcessorCard({ processor, trackId, onDeleteProcessor }: ProcessorCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   
   const {
     attributes,
@@ -56,30 +58,39 @@ export function ProcessorCard({ processor, trackId, onDeleteProcessor }: Process
     displayText = `${processor.label} (${processor.name})`;
   }
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Only open dialog if not dragging and not clicking delete button
+    if (!isDragging && e.target === e.currentTarget) {
+      setDialogOpen(true);
+    }
+  };
+
   return (
-    <Box 
-      ref={setNodeRef} 
-      style={style}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      sx={{ 
-        minHeight: 40,
-        border: '1px solid',
-        borderColor: 'divider',
-        borderRadius: 1,
-        cursor: isDragging ? 'grabbing' : 'grab',
-        '&:hover': {
-          boxShadow: 2,
-        },
-        p: 0.5,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 0.5,
-        position: 'relative'
-      }}
-      {...attributes}
-      {...listeners}
-    >
+    <>
+      <Box 
+        ref={setNodeRef} 
+        style={style}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={handleCardClick}
+        sx={{ 
+          minHeight: 40,
+          border: '1px solid',
+          borderColor: 'divider',
+          borderRadius: 1,
+          cursor: isDragging ? 'grabbing' : 'pointer',
+          '&:hover': {
+            boxShadow: 2,
+          },
+          p: 0.5,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 0.5,
+          position: 'relative'
+        }}
+        {...attributes}
+        {...listeners}
+      >
       {/* Processor Name - Full width draggable area */}
       <Typography 
         variant="caption" 
@@ -117,6 +128,13 @@ export function ProcessorCard({ processor, trackId, onDeleteProcessor }: Process
           <RemoveIcon sx={{ fontSize: '0.8rem' }} />
         </IconButton>
       )}
-    </Box>
+      </Box>
+      
+      <ProcessorDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        processor={processor}
+      />
+    </>
   );
 }

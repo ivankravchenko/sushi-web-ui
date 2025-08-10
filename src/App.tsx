@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, Box } from '@mui/material';
 import { SushiProvider, useSushi } from './contexts/SushiContext';
+import { ProcessorConfigProvider } from './contexts/ProcessorConfigContext';
 import { Toolbar } from './components/Toolbar';
 import { ConnectionDialog } from './components/ConnectionDialog';
 import { MixerView } from './components/MixerView';
@@ -100,7 +101,9 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <SushiProvider>
-        <AppContent />
+        <ProcessorConfigProvider>
+          <AppContent />
+        </ProcessorConfigProvider>
       </SushiProvider>
     </ThemeProvider>
   );

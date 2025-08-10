@@ -16,6 +16,7 @@ import {
   ParameterValue
 } from '../../codegen-grpc/sushi_rpc';
 import { grpc } from '@improbable-eng/grpc-web';
+import { Observable } from 'rxjs';
 
 // Response interfaces for easier consumption
 export interface EngineInfoResponse {
@@ -233,20 +234,72 @@ export class SushiGrpcService {
     }
   }
 
-  // Get parameter value
-  async getParameterValue(processorId: number, parameterId: number): Promise<number> {
+
+
+  // Get processor properties
+  async getProcessorProperties(processorId: number): Promise<any> {
     try {
-      const parameterIdentifier: ParameterIdentifier = { 
-        processorId, 
-        parameterId 
-      };
-      
-      const response = await this.parameterController.GetParameterValue(parameterIdentifier);
-      return response.value;
+      const processorIdentifier: ProcessorIdentifier = { id: processorId };
+      const response = await this.parameterController.GetProcessorProperties(processorIdentifier);
+      return response;
     } catch (error) {
-      console.error(`Failed to get parameter ${parameterId} on processor ${processorId}:`, error);
+      console.error(`Failed to get properties for processor ${processorId}:`, error);
       throw error;
     }
+  }
+
+  // Get property value by name
+  async getPropertyValue(processorId: number, propertyName: string): Promise<string | null> {
+    try {
+      // First get all properties to find the property ID
+      const propertiesResponse = await this.getProcessorProperties(processorId);
+      const property = propertiesResponse.properties?.find((p: any) => p.name === propertyName);
+      
+      if (!property) {
+        return null;
+      }
+
+      // Get the property value
+      const propertyIdentifier = { 
+        processorId, 
+        propertyId: property.id 
+      };
+      const response = await this.parameterController.GetPropertyValue(propertyIdentifier);
+      return response.value || null;
+    } catch (error) {
+      console.error(`Failed to get property ${propertyName} for processor ${processorId}:`, error);
+      return null;
+    }
+  }
+
+  async getParameterValue(processorId: number, parameterId: number): Promise<number | null> {
+    try {
+      const response = await this.parameterController.GetParameterValue({
+        processorId: processorId,
+        parameterId: parameterId
+      });
+      return response.value ?? null;
+    } catch (error) {
+      console.error(`Failed to get parameter value for processor ${processorId}, parameter ${parameterId}:`, error);
+      return null;
+    }
+  }
+
+  async getParameterValueInDomain(processorId: number, parameterId: number): Promise<number | null> {
+    try {
+      const response = await this.parameterController.GetParameterValueInDomain({
+        processorId: processorId,
+        parameterId: parameterId
+      });
+      return response.value ?? null;
+    } catch (error) {
+      console.error(`Failed to get parameter domain value for processor ${processorId}, parameter ${parameterId}:`, error);
+      return null;
+    }
+  }
+
+  subscribeToParameterUpdates(): Observable<any> {
+    return this.notificationController.SubscribeToParameterUpdates({});
   }
 
   // Transport controls

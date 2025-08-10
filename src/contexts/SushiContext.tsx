@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, useCallback, useState } from 'react';
 import { SushiGrpcService } from '../services/SushiGrpcService';
 
 export interface Track {
@@ -13,6 +13,7 @@ export interface Processor {
   name: string;
   label: string;
   trackId: number;
+  properties?: { [key: string]: string };
 }
 
 export interface Parameter {
@@ -109,8 +110,9 @@ const SushiContext = createContext<SushiContextType | null>(null);
 
 export function SushiProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(sushiReducer, initialState);
-  const [grpcService, setGrpcService] = React.useState<SushiGrpcService | null>(null);
-  const [cpuSubscription, setCpuSubscription] = React.useState<{ unsubscribe: () => void } | null>(null);
+  const [grpcService, setGrpcService] = useState<SushiGrpcService | null>(null);
+  const [cpuSubscription, setCpuSubscription] = useState<any>(null);
+  const [parameterSubscription, setParameterSubscription] = useState<any>(null);
 
   const connect = useCallback(async (url: string) => {
     dispatch({ type: 'SET_CONNECTING', payload: true });
@@ -142,6 +144,9 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
       // Start CPU monitoring
       startCpuMonitoring(service);
       
+      // Start parameter monitoring
+      startParameterMonitoring(service);
+      
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: `Connection failed: ${error}` });
       setGrpcService(null);
@@ -155,6 +160,12 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
       setCpuSubscription(null);
     }
     
+    // Clean up parameter subscription
+    if (parameterSubscription) {
+      parameterSubscription.unsubscribe();
+      setParameterSubscription(null);
+    }
+    
     if (grpcService) {
       grpcService.disconnect();
     }
@@ -162,7 +173,7 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'SET_CONNECTED', payload: false });
     dispatch({ type: 'SET_TRACKS', payload: [] });
     dispatch({ type: 'SET_ENGINE_INFO', payload: null });
-  }, [grpcService, cpuSubscription]);
+  }, [grpcService, cpuSubscription, parameterSubscription]);
 
   const loadRealTracks = async (service: SushiGrpcService) => {
     try {
@@ -176,27 +187,72 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
         
 
         
-        // Get parameters for this track (using processor parameters instead)
-        const processors: Processor[] = processorsResponse.processors.map((proc: any) => ({
-          id: proc.id,
-          name: proc.name,
-          label: proc.label,
-          trackId: trackInfo.id
-        }));
+        // Get parameters for this track and processor properties for send/return processors
+        const processors: Processor[] = [];
+        for (const proc of processorsResponse.processors) {
+
+          const processor: Processor = {
+            id: proc.id,
+            name: proc.name,
+            label: proc.label,
+            trackId: trackInfo.id
+          };
+
+          // Fetch properties for send and return processors
+          if (proc.label === 'Send' || proc.label === 'Return') {
+            try {
+              const properties: { [key: string]: string } = {};
+              
+              if (proc.label === 'Send') {
+                // Get destination_name property for send processors
+                const destinationName = await service.getPropertyValue(proc.id, 'destination_name');
+
+                if (destinationName) {
+                  properties.destination_name = destinationName;
+                }
+              }
+              
+              processor.properties = properties;
+              console.log(`Final properties for processor ${proc.id}:`, processor.properties);
+            } catch (error) {
+              console.warn(`Failed to get properties for processor ${proc.id}:`, error);
+            }
+          }
+
+          processors.push(processor);
+        }
         
         // Get track-level parameters (level, pan, etc.)
         let parameters: Parameter[] = [];
         try {
           const trackParametersResponse = await service.getTrackParameters(trackInfo.id);
-          parameters = trackParametersResponse.parameters.map((param: any) => ({
-            parameterId: param.id,
-            name: param.name,
-            value: 0, // Will be updated via real parameter values
-            minValue: param.minDomainValue,
-            maxValue: param.maxDomainValue,
-            unit: param.unit
-          }));
+          // Fetch initial parameter values
+          const parametersWithValues = await Promise.all(
+            trackParametersResponse.parameters.map(async (param: any) => {
+              let initialValue = 0;
+              try {
+                // Get the current parameter value from Sushi (normalized 0-1)
+                const normalizedValue = await service.getParameterValue(trackInfo.id, param.id);
+                if (normalizedValue !== null) {
+                  // Store the normalized value (0-1) since that's what our UI expects
+                  initialValue = normalizedValue;
+                }
+              } catch (error) {
+                console.warn(`Failed to get initial value for parameter ${param.name} on track ${trackInfo.id}:`, error);
+              }
+              
+              return {
+                parameterId: param.id,
+                name: param.name,
+                value: initialValue,
+                minValue: param.minDomainValue,
+                maxValue: param.maxDomainValue,
+                unit: param.unit
+              };
+            })
+          );
           
+          parameters = parametersWithValues;
 
         } catch (error) {
           console.warn(`Failed to get track parameters for track ${trackInfo.id}:`, error);
@@ -249,6 +305,43 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
       // No fallback - if CPU monitoring fails, leave it at 0
     }
   }, [cpuSubscription]);
+
+  const startParameterMonitoring = useCallback((service: SushiGrpcService) => {
+    // Clean up any existing subscription first
+    if (parameterSubscription) {
+      parameterSubscription.unsubscribe();
+    }
+    
+    // Subscribe to parameter updates via streaming
+    try {
+      const subscription = service.subscribeToParameterUpdates().subscribe({
+        next: (update: any) => {
+          // Update parameter value in state when we receive updates from Sushi
+          if (update.parameter && update.parameter.processorId !== undefined && update.parameter.parameterId !== undefined) {
+            // Always use normalizedValue for consistency (0-1 range)
+            const normalizedValue = update.normalizedValue;
+            if (normalizedValue !== undefined) {
+              dispatch({ 
+                type: 'UPDATE_PARAMETER', 
+                payload: {
+                  trackId: update.parameter.processorId, // For track parameters, processorId is trackId
+                  parameterId: update.parameter.parameterId,
+                  value: normalizedValue
+                }
+              });
+            }
+          }
+        },
+        error: (error: any) => {
+          console.error('Parameter subscription error:', error);
+        }
+      });
+      
+      setParameterSubscription(subscription);
+    } catch (error) {
+      console.error('Failed to subscribe to parameter updates:', error);
+    }
+  }, [parameterSubscription]);
 
   const setParameterValue = useCallback(async (trackId: number, parameterId: number, value: number) => {
     if (!grpcService) return;

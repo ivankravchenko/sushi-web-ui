@@ -97,10 +97,21 @@ export function TrackChannel({ track, onParameterChange }: TrackChannelProps) {
       <Box sx={{ mb: 2, flexGrow: 1 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           {track.processors.map((processor) => {
-            // Special handling for "return" processors - show "Return (name)"
-            const displayText = processor.name === 'return' 
-              ? `Return (${processor.label})`
-              : processor.label;
+            // Special handling for send and return processors
+            let displayText = processor.label;
+            
+            if (processor.label === 'Send') {
+              // For send processors: <label> → <destination_name>
+              const destinationName = processor.properties?.destination_name;
+              if (destinationName) {
+                displayText = `${processor.label} → ${destinationName}`;
+              } else {
+                displayText = `${processor.label} →`;
+              }
+            } else if (processor.label === 'Return') {
+              // For return processors: <label> (<name>)
+              displayText = `${processor.label} (${processor.name})`;
+            }
             
             return (
               <Card key={processor.id} variant="outlined" sx={{ minHeight: 40 }}>

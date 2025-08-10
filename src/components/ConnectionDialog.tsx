@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -22,12 +22,16 @@ export function ConnectionDialog({ open, onClose }: ConnectionDialogProps) {
   const { state, connect } = useSushi();
   const [url, setUrl] = useState(state.serverUrl);
 
+  // Auto-close dialog when connection is established
+  useEffect(() => {
+    if (state.connected && open) {
+      onClose();
+    }
+  }, [state.connected, open, onClose]);
+
   const handleConnect = async () => {
     if (url.trim()) {
       await connect(url.trim());
-      if (state.connected) {
-        onClose();
-      }
     }
   };
 

@@ -323,6 +323,11 @@ export class SushiGrpcService {
     return this.notificationController.SubscribeToParameterUpdates(request);
   }
 
+  async subscribeToPropertyUpdates(): Promise<Observable<any>> {
+    const request = {}; // Empty request for all property updates
+    return this.notificationController.SubscribeToPropertyUpdates(request);
+  }
+
   // Track management methods
   async createTrack(name: string, channels: number): Promise<void> {
     await this.audioGraphController.CreateTrack({ name, channels });

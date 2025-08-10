@@ -22,21 +22,22 @@ export interface ParameterDisplayConfig {
     // For sliders/knobs
     step?: number;
     precision?: number;
-    // For any component
     description?: string;
-    color?: string;
   };
 }
+
+export type PropertyComponentType = 
+  | 'textfield'
+  | 'textarea';
 
 export interface PropertyDisplayConfig {
   propertyId: number;
   propertyName: string;
-  displayName?: string;
-  componentType?: ParameterComponentType;
-  order: number;
-  tab: 'primary' | 'secondary';
+  componentType: PropertyComponentType;
   visible: boolean;
-  customOptions?: {
+  tab: 'primary' | 'secondary';
+  order: number;
+  customization?: {
     multiline?: boolean;
     placeholder?: string;
     description?: string;
@@ -46,7 +47,6 @@ export interface PropertyDisplayConfig {
 export interface ProcessorDisplayConfig {
   processorId: number;
   processorName: string;
-  displayName?: string;
   parameters: ParameterDisplayConfig[];
   properties: PropertyDisplayConfig[];
   tabOrder: ('primary' | 'secondary')[];
@@ -56,42 +56,35 @@ export interface ProcessorDisplayConfig {
 
 export interface ProcessorConfigurationState {
   configurations: { [processorId: number]: ProcessorDisplayConfig };
-  globalDefaults: {
-    primaryTabName: string;
-    secondaryTabName: string;
-    defaultParameterTab: 'primary' | 'secondary';
-    defaultPropertyTab: 'primary' | 'secondary';
-  };
 }
 
-// Default configuration generator
+// Helper function to get default component type
+export function getDefaultComponentType(parameterType: number): ParameterComponentType {
+  switch (parameterType) {
+    case 1: // BOOL
+      return 'toggle';
+    case 2: // INT
+    case 3: // FLOAT
+      return 'slider';
+    default:
+      return 'textfield';
+  }
+}
+
+// Default configuration generators
 export function createDefaultParameterConfig(
-  parameterId: number,
-  parameterName: string,
+  parameterId: number, 
+  parameterName: string, 
   parameterType: number,
   order: number
 ): ParameterDisplayConfig {
-  let defaultComponent: ParameterComponentType = 'slider';
-  
-  switch (parameterType) {
-    case 1: // BOOL
-      defaultComponent = 'toggle';
-      break;
-    case 2: // INT
-    case 3: // FLOAT
-      defaultComponent = 'slider';
-      break;
-    default:
-      defaultComponent = 'textfield';
-  }
-
   return {
     parameterId,
     parameterName,
-    componentType: defaultComponent,
-    order,
-    tab: 'primary',
+    componentType: getDefaultComponentType(parameterType),
     visible: true,
+    tab: 'primary',
+    order
   };
 }
 
@@ -104,23 +97,20 @@ export function createDefaultPropertyConfig(
     propertyId,
     propertyName,
     componentType: 'textfield',
-    order,
-    tab: 'secondary',
     visible: true,
+    tab: 'primary', // Properties go to main tab by default
+    order
   };
 }
 
-export function createDefaultProcessorConfig(
-  processorId: number,
-  processorName: string
-): ProcessorDisplayConfig {
+export function createDefaultProcessorConfig(processorId: number, processorName: string): ProcessorDisplayConfig {
   return {
     processorId,
     processorName,
+    primaryTabName: '1',
+    secondaryTabName: '2',
     parameters: [],
     properties: [],
-    tabOrder: ['primary', 'secondary'],
-    primaryTabName: 'Main',
-    secondaryTabName: 'Advanced',
+    tabOrder: ['primary', 'secondary']
   };
 }

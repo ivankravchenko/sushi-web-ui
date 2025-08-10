@@ -29,13 +29,7 @@ type ConfigAction =
   | { type: 'RESET_PROCESSOR_CONFIG'; processorId: number };
 
 const initialState: ProcessorConfigurationState = {
-  configurations: {},
-  globalDefaults: {
-    primaryTabName: 'Main',
-    secondaryTabName: 'Advanced',
-    defaultParameterTab: 'primary',
-    defaultPropertyTab: 'secondary',
-  },
+  configurations: {}
 };
 
 function configReducer(state: ProcessorConfigurationState, action: ConfigAction): ProcessorConfigurationState {

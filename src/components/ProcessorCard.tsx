@@ -9,6 +9,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { Processor } from '../contexts/SushiContext';
 import { ProcessorDialog } from './ProcessorDialog';
+import { getProcessorDisplayText } from '../utils/processorUtils';
 
 interface ProcessorCardProps {
   processor: Processor;
@@ -42,21 +43,8 @@ export function ProcessorCard({ processor, trackId, onDeleteProcessor }: Process
     opacity: isDragging ? 0.5 : 1,
   };
 
-  // Special handling for send and return processors
-  let displayText = processor.label;
-  
-  if (processor.label === 'Send') {
-    // For send processors: <label> → <destination_name>
-    const destinationName = processor.properties?.destination_name;
-    if (destinationName) {
-      displayText = `${processor.label} → ${destinationName}`;
-    } else {
-      displayText = `${processor.label} →`;
-    }
-  } else if (processor.label === 'Return') {
-    // For return processors: <label> (<name>)
-    displayText = `${processor.label} (${processor.name})`;
-  }
+  // Get consistent processor display text
+  const displayText = getProcessorDisplayText(processor);
 
   const handleCardClick = (e: React.MouseEvent) => {
     // Only open dialog if not dragging and not clicking delete button

@@ -7,7 +7,7 @@ mkdir -p src/generated
 npx protoc \
   --plugin=./node_modules/.bin/protoc-gen-ts_proto \
   --ts_proto_out=src/generated \
-  --ts_proto_opt=outputServices=grpc-web,env=browser,useExactTypes=false,esModuleInterop=true \
+  --ts_proto_opt=outputServices=grpc-web,env=browser,useExactTypes=false,esModuleInterop=true,outputClientImpl=grpc-web,useAbortSignal=true \
   --proto_path=proto \
   proto/sushi_rpc.proto \
   proto/api_version.proto

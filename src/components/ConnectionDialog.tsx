@@ -20,7 +20,13 @@ interface ConnectionDialogProps {
 
 export function ConnectionDialog({ open, onClose }: ConnectionDialogProps) {
   const { state, connect } = useSushi();
-  const [url, setUrl] = useState(state.serverUrl);
+  const [url, setUrl] = useState('http://localhost:8081');
+
+  // Clear any cached URL and set default
+  useEffect(() => {
+    localStorage.removeItem('sushi-server-url');
+    setUrl('http://localhost:8081');
+  }, []);
 
   // Auto-close dialog when connection is established
   useEffect(() => {
@@ -30,8 +36,13 @@ export function ConnectionDialog({ open, onClose }: ConnectionDialogProps) {
   }, [state.connected, open, onClose]);
 
   const handleConnect = async () => {
-    if (url.trim()) {
+    if (!url.trim()) return;
+    
+    console.log('ConnectionDialog: Attempting to connect to:', url.trim());
+    try {
       await connect(url.trim());
+    } catch (error) {
+      console.error('Connection failed:', error);
     }
   };
 
@@ -54,7 +65,7 @@ export function ConnectionDialog({ open, onClose }: ConnectionDialogProps) {
             autoFocus
             fullWidth
             label="gRPC-Web Proxy URL"
-            placeholder="http://localhost:8080"
+            placeholder="http://localhost:8081"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             onKeyPress={handleKeyPress}

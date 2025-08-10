@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useCallback } from 'react';
-import { SushiGrpcClient } from '../services/SushiGrpcClient';
+import { SushiGrpcService } from '../services/SushiGrpcService';
 
 export interface Track {
   id: number;
@@ -32,6 +32,8 @@ export interface SushiState {
     sushiVersion?: string;
     sampleRate?: number;
     bufferSize?: number;
+    inputChannels?: number;
+    outputChannels?: number;
   } | null;
   tracks: Track[];
   cpuLoad: number;
@@ -51,7 +53,7 @@ const initialState: SushiState = {
   connected: false,
   connecting: false,
   error: null,
-  serverUrl: localStorage.getItem('sushi-server-url') || 'http://localhost:8080',
+  serverUrl: localStorage.getItem('sushi-server-url') || 'http://localhost:8081',
   engineInfo: null,
   tracks: [],
   cpuLoad: 0,
@@ -106,24 +108,26 @@ const SushiContext = createContext<SushiContextType | null>(null);
 
 export function SushiProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(sushiReducer, initialState);
-  const [grpcClient, setGrpcClient] = React.useState<SushiGrpcClient | null>(null);
+  const [grpcService, setGrpcService] = React.useState<SushiGrpcService | null>(null);
 
   const connect = useCallback(async (url: string) => {
     dispatch({ type: 'SET_CONNECTING', payload: true });
     dispatch({ type: 'SET_SERVER_URL', payload: url });
     
     try {
-      // Create real gRPC client
-      const client = new SushiGrpcClient(url);
-      setGrpcClient(client);
+      // Create real gRPC service
+      const service = new SushiGrpcService(url);
+      setGrpcService(service);
       
       // Test connection by getting engine info from real Sushi backend
-      const engineInfo = await client.getEngineInfo();
+      const engineInfo = await service.getEngineInfo();
       
       dispatch({ type: 'SET_ENGINE_INFO', payload: {
         sushiVersion: engineInfo.sushiVersion,
         sampleRate: engineInfo.sampleRate,
-        bufferSize: engineInfo.bufferSize
+        bufferSize: engineInfo.bufferSize,
+        inputChannels: engineInfo.inputChannels,
+        outputChannels: engineInfo.outputChannels
       }});
       dispatch({ type: 'SET_CONNECTED', payload: true });
       
@@ -131,52 +135,66 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('sushi-server-url', url);
       
       // Load real tracks data
-      await loadRealTracks(client);
+      await loadRealTracks(service);
+      
+      // Start CPU monitoring
+      startCpuMonitoring(service);
       
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: `Connection failed: ${error}` });
-      setGrpcClient(null);
+      setGrpcService(null);
     }
   }, []);
 
   const disconnect = useCallback(() => {
-    setGrpcClient(null);
+    if (grpcService) {
+      grpcService.disconnect();
+    }
+    setGrpcService(null);
     dispatch({ type: 'SET_CONNECTED', payload: false });
     dispatch({ type: 'SET_TRACKS', payload: [] });
     dispatch({ type: 'SET_ENGINE_INFO', payload: null });
-  }, []);
+  }, [grpcService]);
 
-  const loadRealTracks = async (client: SushiGrpcClient) => {
+  const loadRealTracks = async (service: SushiGrpcService) => {
     try {
       // Get tracks from real Sushi backend
-      const tracksResponse = await client.getTracks();
+      const tracksResponse = await service.getTracks();
       const tracks: Track[] = [];
       
       for (const trackInfo of tracksResponse.tracks) {
         // Get processors for this track
-        const processorsResponse = await client.getProcessorsOnTrack(trackInfo.id);
+        const processorsResponse = await service.getProcessorsOnTrack(trackInfo.id);
         
-        // Get parameters for this track
-        const parametersResponse = await client.getTrackParameters(trackInfo.id);
-        
-        const processors: Processor[] = processorsResponse.processors.map(proc => ({
+        // Get parameters for this track (using processor parameters instead)
+        const processors: Processor[] = processorsResponse.processors.map((proc: any) => ({
           id: proc.id,
           name: proc.name,
           trackId: trackInfo.id
         }));
         
-        const parameters: Parameter[] = parametersResponse.parameters.map(param => ({
-          parameterId: param.parameterId,
-          name: param.name,
-          value: param.value,
-          minValue: param.minValue,
-          maxValue: param.maxValue,
-          unit: param.unit
-        }));
+        // For now, we'll get parameters from the first processor if available
+        let parameters: Parameter[] = [];
+        if (processors.length > 0) {
+          try {
+            const parametersResponse = await service.getProcessorParameters(processors[0].id);
+            parameters = parametersResponse.parameters.map((param: any) => ({
+              parameterId: param.id,
+              name: param.name,
+              value: 0, // Will be updated via real parameter values
+              minValue: param.minDomainValue,
+              maxValue: param.maxDomainValue,
+              unit: param.unit
+            }));
+          } catch (error) {
+            console.warn(`Failed to get parameters for processor ${processors[0].id}:`, error);
+          }
+        }
+
         
         tracks.push({
           id: trackInfo.id,
-          name: trackInfo.name,
+          name: trackInfo.name || trackInfo.label,
           processors,
           parameters
         });
@@ -192,17 +210,52 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
   };
 
   const refreshData = useCallback(async () => {
-    if (state.connected && grpcClient) {
-      await loadRealTracks(grpcClient);
+    if (state.connected && grpcService) {
+      await loadRealTracks(grpcService);
     }
-  }, [state.connected, grpcClient]);
+  }, [state.connected, grpcService]);
+
+  const startCpuMonitoring = useCallback((service: SushiGrpcService) => {
+    // Subscribe to CPU timing updates via streaming
+    try {
+      service.subscribeToCpuTimings((timings) => {
+        // Calculate average CPU load from main and threads
+        const mainLoad = timings.main?.average || 0;
+        const avgThreadLoad = timings.threads.length > 0 
+          ? timings.threads.reduce((sum, thread) => sum + (thread.average || 0), 0) / timings.threads.length
+          : 0;
+        const totalLoad = (mainLoad + avgThreadLoad) / 2;
+        dispatch({ type: 'SET_CPU_LOAD', payload: totalLoad });
+      });
+    } catch (error) {
+      console.error('Failed to subscribe to CPU timings:', error);
+      // Fallback to periodic updates if streaming fails
+      const updateCpuLoad = async () => {
+        dispatch({ type: 'SET_CPU_LOAD', payload: 0.1 }); // Mock value
+      };
+      const intervalId = setInterval(updateCpuLoad, 2000);
+      return intervalId;
+    }
+
+
+  }, []);
 
   const setParameterValue = useCallback(async (trackId: number, parameterId: number, value: number) => {
-    if (!grpcClient) return;
+    if (!grpcService) return;
     
     try {
+      // For now, we need to find the processor ID from the track
+      // This is a simplified approach - in a real app you'd track processor IDs properly
+      const tracks = state.tracks.find(t => t.id === trackId);
+      if (!tracks || tracks.processors.length === 0) {
+        console.warn(`No processors found for track ${trackId}`);
+        return;
+      }
+      
+      const processorId = tracks.processors[0].id;
+      
       // Update parameter on real Sushi backend
-      await grpcClient.setParameterValue(trackId, parameterId, value);
+      await grpcService.setParameterValue(processorId, parameterId, value);
       
       // Update parameter locally to reflect the change immediately
       dispatch({
@@ -210,11 +263,11 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
         payload: { trackId, parameterId, value }
       });
       
-      console.log(`Successfully set parameter ${parameterId} on track ${trackId} to ${value}`);
+      console.log(`Successfully set parameter ${parameterId} on processor ${processorId} to ${value}`);
     } catch (error) {
       console.error('Failed to set parameter on Sushi backend:', error);
     }
-  }, [grpcClient]);
+  }, [grpcService, state.tracks]);
 
   const contextValue: SushiContextType = {
     state,

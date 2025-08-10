@@ -11,15 +11,18 @@ import {
 import {
   Settings as SettingsIcon,
   Refresh as RefreshIcon,
-  PowerSettingsNew as DisconnectIcon
+  PowerSettingsNew as DisconnectIcon,
+  Help as HelpIcon
 } from '@mui/icons-material';
 import { useSushi } from '../contexts/SushiContext';
+import { ConnectionStatus } from './ConnectionStatus';
 
 interface ToolbarProps {
   onOpenSettings: () => void;
+  onOpenHelp: () => void;
 }
 
-export function Toolbar({ onOpenSettings }: ToolbarProps) {
+export function Toolbar({ onOpenSettings, onOpenHelp }: ToolbarProps) {
   const { state, disconnect, refreshData } = useSushi();
 
   const formatCpuLoad = (load: number) => {
@@ -37,8 +40,10 @@ export function Toolbar({ onOpenSettings }: ToolbarProps) {
           Sushi Web UI
         </Typography>
         
-        {state.connected && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <ConnectionStatus />
+          
+          {state.connected && (
             <Box sx={{ display: 'flex', gap: 1 }}>
               <Chip
                 label={`Version: ${state.engineInfo?.sushiVersion || 'Unknown'}`}
@@ -66,11 +71,18 @@ export function Toolbar({ onOpenSettings }: ToolbarProps) {
                 sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}
               />
             </Box>
-            
+          )}
+          
+          {state.connected && (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Tooltip title="Refresh Data">
                 <IconButton color="inherit" onClick={refreshData}>
                   <RefreshIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Help & Shortcuts">
+                <IconButton color="inherit" onClick={onOpenHelp}>
+                  <HelpIcon />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Settings">
@@ -84,8 +96,8 @@ export function Toolbar({ onOpenSettings }: ToolbarProps) {
                 </IconButton>
               </Tooltip>
             </Box>
-          </Box>
-        )}
+          )}
+        </Box>
       </MuiToolbar>
     </AppBar>
   );

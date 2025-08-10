@@ -32,26 +32,6 @@ export interface GenericStringValue {
   value: string;
 }
 
-export interface FloatResponse {
-  status: CommandStatus | undefined;
-  value: number;
-}
-
-export interface IntResponse {
-  status: CommandStatus | undefined;
-  value: number;
-}
-
-export interface BoolResponse {
-  status: CommandStatus | undefined;
-  value: boolean;
-}
-
-export interface StringResponse {
-  status: CommandStatus | undefined;
-  value: string;
-}
-
 export interface OptionalBoolValue {
   hasValue: boolean;
   value: boolean;
@@ -60,89 +40,6 @@ export interface OptionalBoolValue {
 export interface OptionalIntValue {
   hasValue: boolean;
   value: number;
-}
-
-export interface CommandStatus {
-  status: CommandStatus_Status;
-}
-
-export enum CommandStatus_Status {
-  DUMMY = 0,
-  SUCCESS = 1,
-  ASYNC_RESPONSE = 2,
-  ERROR = 3,
-  UNSUPPORTED_OPERATION = 4,
-  NOT_FOUND = 5,
-  OUT_OF_RANGE = 6,
-  INVALID_ARGUMENTS = 7,
-  UNRECOGNIZED = -1,
-}
-
-export function commandStatus_StatusFromJSON(object: any): CommandStatus_Status {
-  switch (object) {
-    case 0:
-    case "DUMMY":
-      return CommandStatus_Status.DUMMY;
-    case 1:
-    case "SUCCESS":
-      return CommandStatus_Status.SUCCESS;
-    case 2:
-    case "ASYNC_RESPONSE":
-      return CommandStatus_Status.ASYNC_RESPONSE;
-    case 3:
-    case "ERROR":
-      return CommandStatus_Status.ERROR;
-    case 4:
-    case "UNSUPPORTED_OPERATION":
-      return CommandStatus_Status.UNSUPPORTED_OPERATION;
-    case 5:
-    case "NOT_FOUND":
-      return CommandStatus_Status.NOT_FOUND;
-    case 6:
-    case "OUT_OF_RANGE":
-      return CommandStatus_Status.OUT_OF_RANGE;
-    case 7:
-    case "INVALID_ARGUMENTS":
-      return CommandStatus_Status.INVALID_ARGUMENTS;
-    case -1:
-    case "UNRECOGNIZED":
-    default:
-      return CommandStatus_Status.UNRECOGNIZED;
-  }
-}
-
-export function commandStatus_StatusToJSON(object: CommandStatus_Status): string {
-  switch (object) {
-    case CommandStatus_Status.DUMMY:
-      return "DUMMY";
-    case CommandStatus_Status.SUCCESS:
-      return "SUCCESS";
-    case CommandStatus_Status.ASYNC_RESPONSE:
-      return "ASYNC_RESPONSE";
-    case CommandStatus_Status.ERROR:
-      return "ERROR";
-    case CommandStatus_Status.UNSUPPORTED_OPERATION:
-      return "UNSUPPORTED_OPERATION";
-    case CommandStatus_Status.NOT_FOUND:
-      return "NOT_FOUND";
-    case CommandStatus_Status.OUT_OF_RANGE:
-      return "OUT_OF_RANGE";
-    case CommandStatus_Status.INVALID_ARGUMENTS:
-      return "INVALID_ARGUMENTS";
-    case CommandStatus_Status.UNRECOGNIZED:
-    default:
-      return "UNRECOGNIZED";
-  }
-}
-
-export interface CommandResponse {
-  status: CommandStatus | undefined;
-  id: number;
-}
-
-export interface AsyncCommandResponse {
-  status: CommandStatus | undefined;
-  requestId: number;
 }
 
 export interface SushiBuildInfo {
@@ -157,17 +54,7 @@ export interface TrackIdentifier {
   id: number;
 }
 
-export interface TrackIdentifierResponse {
-  status: CommandStatus | undefined;
-  id: number;
-}
-
 export interface ProcessorIdentifier {
-  id: number;
-}
-
-export interface ProcessorIdentifierResponse {
-  status: CommandStatus | undefined;
   id: number;
 }
 
@@ -176,19 +63,9 @@ export interface ParameterIdentifier {
   parameterId: number;
 }
 
-export interface ParameterIdentifierResponse {
-  status: CommandStatus | undefined;
-  id: ParameterIdentifier | undefined;
-}
-
 export interface PropertyIdentifier {
   processorId: number;
   propertyId: number;
-}
-
-export interface PropertyIdentifierResponse {
-  status: CommandStatus | undefined;
-  id: PropertyIdentifier | undefined;
 }
 
 /** 0 is reserved for "not set" in protobuf, so we don't use it for a valid response */
@@ -344,20 +221,10 @@ export interface TimeSignature {
   denominator: number;
 }
 
-export interface Timings {
+export interface CpuTimings {
   average: number;
   min: number;
   max: number;
-}
-
-export interface CpuTimings {
-  main: Timings | undefined;
-  threads: Timings[];
-}
-
-export interface TimingResponse {
-  status: CommandStatus | undefined;
-  timings: Timings | undefined;
 }
 
 export interface NoteOnRequest {
@@ -442,14 +309,8 @@ export interface TrackInfo {
   name: string;
   channels: number;
   buses: number;
-  thread: number;
   type: TrackType | undefined;
   processors: ProcessorIdentifier[];
-}
-
-export interface TrackInfoResponse {
-  status: CommandStatus | undefined;
-  info: TrackInfo | undefined;
 }
 
 export interface TrackInfoList {
@@ -464,26 +325,11 @@ export interface ProcessorInfo {
   programCount: number;
 }
 
-export interface ProcessorInfoResponse {
-  status: CommandStatus | undefined;
-  processor: ProcessorInfo | undefined;
-}
-
 export interface ProcessorInfoList {
   processors: ProcessorInfo[];
 }
 
-export interface ProcessorInfoListResponse {
-  status: CommandStatus | undefined;
-  processors: ProcessorInfo[];
-}
-
 export interface ProgramIdentifier {
-  program: number;
-}
-
-export interface ProgramIdentifierResponse {
-  status: CommandStatus | undefined;
   program: number;
 }
 
@@ -498,11 +344,6 @@ export interface ProgramInfo {
 }
 
 export interface ProgramInfoList {
-  programs: ProgramInfo[];
-}
-
-export interface ProgramInfoListResponse {
-  status: CommandStatus | undefined;
   programs: ProgramInfo[];
 }
 
@@ -524,11 +365,6 @@ export interface ProcessorState {
   binaryData: Uint8Array;
 }
 
-export interface ProcessorStateResponse {
-  status: CommandStatus | undefined;
-  state: ProcessorState | undefined;
-}
-
 export interface ProcessorStateSetRequest {
   processor: ProcessorIdentifier | undefined;
   state: ProcessorState | undefined;
@@ -545,17 +381,7 @@ export interface ParameterInfo {
   maxDomainValue: number;
 }
 
-export interface ParameterInfoResponse {
-  status: CommandStatus | undefined;
-  info: ParameterInfo | undefined;
-}
-
 export interface ParameterInfoList {
-  parameters: ParameterInfo[];
-}
-
-export interface ParameterInfoListResponse {
-  status: CommandStatus | undefined;
   parameters: ParameterInfo[];
 }
 
@@ -582,17 +408,7 @@ export interface PropertyInfo {
   label: string;
 }
 
-export interface PropertyInfoResponse {
-  status: CommandStatus | undefined;
-  info: PropertyInfo | undefined;
-}
-
 export interface PropertyInfoList {
-  properties: PropertyInfo[];
-}
-
-export interface PropertyInfoListResponse {
-  status: CommandStatus | undefined;
   properties: PropertyInfo[];
 }
 
@@ -669,13 +485,11 @@ export interface ProcessorPosition {
 export interface CreateTrackRequest {
   name: string;
   channels: number;
-  thread: OptionalIntValue | undefined;
 }
 
 export interface CreateMultibusTrackRequest {
   name: string;
   buses: number;
-  thread: OptionalIntValue | undefined;
 }
 
 export interface CreatePreTrackRequest {
@@ -858,22 +672,12 @@ export interface AudioConnectionList {
   connections: AudioConnection[];
 }
 
-export interface AudioConnectionListResponse {
-  status: CommandStatus | undefined;
-  connections: AudioConnection[];
-}
-
 export interface CvConnection {
   parameter: ParameterIdentifier | undefined;
   cvPortId: number;
 }
 
 export interface CvConnectionList {
-  connections: CvConnection[];
-}
-
-export interface CvConnectionListResponse {
-  status: CommandStatus | undefined;
   connections: CvConnection[];
 }
 
@@ -885,11 +689,6 @@ export interface GateConnection {
 }
 
 export interface GateConnectionList {
-  connections: GateConnection[];
-}
-
-export interface GateConnectionListResponse {
-  status: CommandStatus | undefined;
   connections: GateConnection[];
 }
 
@@ -918,11 +717,6 @@ export interface MidiCCConnectionList {
   connections: MidiCCConnection[];
 }
 
-export interface MidiCCConnectionListResponse {
-  status: CommandStatus | undefined;
-  connections: MidiCCConnection[];
-}
-
 export interface MidiPCConnection {
   processor: ProcessorIdentifier | undefined;
   channel: MidiChannel | undefined;
@@ -930,11 +724,6 @@ export interface MidiPCConnection {
 }
 
 export interface MidiPCConnectionList {
-  connections: MidiPCConnection[];
-}
-
-export interface MidiPCConnectionListResponse {
-  status: CommandStatus | undefined;
   connections: MidiPCConnection[];
 }
 
@@ -1122,7 +911,6 @@ export interface TrackState {
   label: string;
   channels: number;
   buses: number;
-  thread: number;
   type: TrackType | undefined;
   trackState: ProcessorState | undefined;
   processors: PluginClass[];
@@ -1412,318 +1200,6 @@ export const GenericStringValue: MessageFns<GenericStringValue> = {
   },
 };
 
-function createBaseFloatResponse(): FloatResponse {
-  return { status: undefined, value: 0 };
-}
-
-export const FloatResponse: MessageFns<FloatResponse> = {
-  encode(message: FloatResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    if (message.value !== 0) {
-      writer.uint32(21).float(message.value);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): FloatResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseFloatResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 21) {
-            break;
-          }
-
-          message.value = reader.float();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): FloatResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      value: isSet(object.value) ? globalThis.Number(object.value) : 0,
-    };
-  },
-
-  toJSON(message: FloatResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.value !== 0) {
-      obj.value = message.value;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<FloatResponse>, I>>(base?: I): FloatResponse {
-    return FloatResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<FloatResponse>, I>>(object: I): FloatResponse {
-    const message = createBaseFloatResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
-    message.value = object.value ?? 0;
-    return message;
-  },
-};
-
-function createBaseIntResponse(): IntResponse {
-  return { status: undefined, value: 0 };
-}
-
-export const IntResponse: MessageFns<IntResponse> = {
-  encode(message: IntResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    if (message.value !== 0) {
-      writer.uint32(16).int32(message.value);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): IntResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseIntResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 16) {
-            break;
-          }
-
-          message.value = reader.int32();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): IntResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      value: isSet(object.value) ? globalThis.Number(object.value) : 0,
-    };
-  },
-
-  toJSON(message: IntResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.value !== 0) {
-      obj.value = Math.round(message.value);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<IntResponse>, I>>(base?: I): IntResponse {
-    return IntResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<IntResponse>, I>>(object: I): IntResponse {
-    const message = createBaseIntResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
-    message.value = object.value ?? 0;
-    return message;
-  },
-};
-
-function createBaseBoolResponse(): BoolResponse {
-  return { status: undefined, value: false };
-}
-
-export const BoolResponse: MessageFns<BoolResponse> = {
-  encode(message: BoolResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    if (message.value !== false) {
-      writer.uint32(16).bool(message.value);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): BoolResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseBoolResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 16) {
-            break;
-          }
-
-          message.value = reader.bool();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): BoolResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      value: isSet(object.value) ? globalThis.Boolean(object.value) : false,
-    };
-  },
-
-  toJSON(message: BoolResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.value !== false) {
-      obj.value = message.value;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<BoolResponse>, I>>(base?: I): BoolResponse {
-    return BoolResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<BoolResponse>, I>>(object: I): BoolResponse {
-    const message = createBaseBoolResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
-    message.value = object.value ?? false;
-    return message;
-  },
-};
-
-function createBaseStringResponse(): StringResponse {
-  return { status: undefined, value: "" };
-}
-
-export const StringResponse: MessageFns<StringResponse> = {
-  encode(message: StringResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    if (message.value !== "") {
-      writer.uint32(18).string(message.value);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): StringResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseStringResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.value = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): StringResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      value: isSet(object.value) ? globalThis.String(object.value) : "",
-    };
-  },
-
-  toJSON(message: StringResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.value !== "") {
-      obj.value = message.value;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<StringResponse>, I>>(base?: I): StringResponse {
-    return StringResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<StringResponse>, I>>(object: I): StringResponse {
-    const message = createBaseStringResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
-    message.value = object.value ?? "";
-    return message;
-  },
-};
-
 function createBaseOptionalBoolValue(): OptionalBoolValue {
   return { hasValue: false, value: false };
 }
@@ -1872,220 +1348,6 @@ export const OptionalIntValue: MessageFns<OptionalIntValue> = {
     const message = createBaseOptionalIntValue();
     message.hasValue = object.hasValue ?? false;
     message.value = object.value ?? 0;
-    return message;
-  },
-};
-
-function createBaseCommandStatus(): CommandStatus {
-  return { status: 0 };
-}
-
-export const CommandStatus: MessageFns<CommandStatus> = {
-  encode(message: CommandStatus, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== 0) {
-      writer.uint32(8).int32(message.status);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): CommandStatus {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseCommandStatus();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 8) {
-            break;
-          }
-
-          message.status = reader.int32() as any;
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): CommandStatus {
-    return { status: isSet(object.status) ? commandStatus_StatusFromJSON(object.status) : 0 };
-  },
-
-  toJSON(message: CommandStatus): unknown {
-    const obj: any = {};
-    if (message.status !== 0) {
-      obj.status = commandStatus_StatusToJSON(message.status);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<CommandStatus>, I>>(base?: I): CommandStatus {
-    return CommandStatus.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<CommandStatus>, I>>(object: I): CommandStatus {
-    const message = createBaseCommandStatus();
-    message.status = object.status ?? 0;
-    return message;
-  },
-};
-
-function createBaseCommandResponse(): CommandResponse {
-  return { status: undefined, id: 0 };
-}
-
-export const CommandResponse: MessageFns<CommandResponse> = {
-  encode(message: CommandResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    if (message.id !== 0) {
-      writer.uint32(16).int32(message.id);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): CommandResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseCommandResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 16) {
-            break;
-          }
-
-          message.id = reader.int32();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): CommandResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      id: isSet(object.id) ? globalThis.Number(object.id) : 0,
-    };
-  },
-
-  toJSON(message: CommandResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.id !== 0) {
-      obj.id = Math.round(message.id);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<CommandResponse>, I>>(base?: I): CommandResponse {
-    return CommandResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<CommandResponse>, I>>(object: I): CommandResponse {
-    const message = createBaseCommandResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
-    message.id = object.id ?? 0;
-    return message;
-  },
-};
-
-function createBaseAsyncCommandResponse(): AsyncCommandResponse {
-  return { status: undefined, requestId: 0 };
-}
-
-export const AsyncCommandResponse: MessageFns<AsyncCommandResponse> = {
-  encode(message: AsyncCommandResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    if (message.requestId !== 0) {
-      writer.uint32(16).int32(message.requestId);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): AsyncCommandResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseAsyncCommandResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 16) {
-            break;
-          }
-
-          message.requestId = reader.int32();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): AsyncCommandResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      requestId: isSet(object.requestId) ? globalThis.Number(object.requestId) : 0,
-    };
-  },
-
-  toJSON(message: AsyncCommandResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.requestId !== 0) {
-      obj.requestId = Math.round(message.requestId);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<AsyncCommandResponse>, I>>(base?: I): AsyncCommandResponse {
-    return AsyncCommandResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<AsyncCommandResponse>, I>>(object: I): AsyncCommandResponse {
-    const message = createBaseAsyncCommandResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
-    message.requestId = object.requestId ?? 0;
     return message;
   },
 };
@@ -2274,84 +1536,6 @@ export const TrackIdentifier: MessageFns<TrackIdentifier> = {
   },
 };
 
-function createBaseTrackIdentifierResponse(): TrackIdentifierResponse {
-  return { status: undefined, id: 0 };
-}
-
-export const TrackIdentifierResponse: MessageFns<TrackIdentifierResponse> = {
-  encode(message: TrackIdentifierResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    if (message.id !== 0) {
-      writer.uint32(16).int32(message.id);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): TrackIdentifierResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseTrackIdentifierResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 16) {
-            break;
-          }
-
-          message.id = reader.int32();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): TrackIdentifierResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      id: isSet(object.id) ? globalThis.Number(object.id) : 0,
-    };
-  },
-
-  toJSON(message: TrackIdentifierResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.id !== 0) {
-      obj.id = Math.round(message.id);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<TrackIdentifierResponse>, I>>(base?: I): TrackIdentifierResponse {
-    return TrackIdentifierResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<TrackIdentifierResponse>, I>>(object: I): TrackIdentifierResponse {
-    const message = createBaseTrackIdentifierResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
-    message.id = object.id ?? 0;
-    return message;
-  },
-};
-
 function createBaseProcessorIdentifier(): ProcessorIdentifier {
   return { id: 0 };
 }
@@ -2405,84 +1589,6 @@ export const ProcessorIdentifier: MessageFns<ProcessorIdentifier> = {
   },
   fromPartial<I extends Exact<DeepPartial<ProcessorIdentifier>, I>>(object: I): ProcessorIdentifier {
     const message = createBaseProcessorIdentifier();
-    message.id = object.id ?? 0;
-    return message;
-  },
-};
-
-function createBaseProcessorIdentifierResponse(): ProcessorIdentifierResponse {
-  return { status: undefined, id: 0 };
-}
-
-export const ProcessorIdentifierResponse: MessageFns<ProcessorIdentifierResponse> = {
-  encode(message: ProcessorIdentifierResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    if (message.id !== 0) {
-      writer.uint32(16).int32(message.id);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ProcessorIdentifierResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseProcessorIdentifierResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 16) {
-            break;
-          }
-
-          message.id = reader.int32();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ProcessorIdentifierResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      id: isSet(object.id) ? globalThis.Number(object.id) : 0,
-    };
-  },
-
-  toJSON(message: ProcessorIdentifierResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.id !== 0) {
-      obj.id = Math.round(message.id);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<ProcessorIdentifierResponse>, I>>(base?: I): ProcessorIdentifierResponse {
-    return ProcessorIdentifierResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<ProcessorIdentifierResponse>, I>>(object: I): ProcessorIdentifierResponse {
-    const message = createBaseProcessorIdentifierResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
     message.id = object.id ?? 0;
     return message;
   },
@@ -2564,86 +1670,6 @@ export const ParameterIdentifier: MessageFns<ParameterIdentifier> = {
   },
 };
 
-function createBaseParameterIdentifierResponse(): ParameterIdentifierResponse {
-  return { status: undefined, id: undefined };
-}
-
-export const ParameterIdentifierResponse: MessageFns<ParameterIdentifierResponse> = {
-  encode(message: ParameterIdentifierResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    if (message.id !== undefined) {
-      ParameterIdentifier.encode(message.id, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ParameterIdentifierResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseParameterIdentifierResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.id = ParameterIdentifier.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ParameterIdentifierResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      id: isSet(object.id) ? ParameterIdentifier.fromJSON(object.id) : undefined,
-    };
-  },
-
-  toJSON(message: ParameterIdentifierResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.id !== undefined) {
-      obj.id = ParameterIdentifier.toJSON(message.id);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<ParameterIdentifierResponse>, I>>(base?: I): ParameterIdentifierResponse {
-    return ParameterIdentifierResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<ParameterIdentifierResponse>, I>>(object: I): ParameterIdentifierResponse {
-    const message = createBaseParameterIdentifierResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
-    message.id = (object.id !== undefined && object.id !== null)
-      ? ParameterIdentifier.fromPartial(object.id)
-      : undefined;
-    return message;
-  },
-};
-
 function createBasePropertyIdentifier(): PropertyIdentifier {
   return { processorId: 0, propertyId: 0 };
 }
@@ -2716,86 +1742,6 @@ export const PropertyIdentifier: MessageFns<PropertyIdentifier> = {
     const message = createBasePropertyIdentifier();
     message.processorId = object.processorId ?? 0;
     message.propertyId = object.propertyId ?? 0;
-    return message;
-  },
-};
-
-function createBasePropertyIdentifierResponse(): PropertyIdentifierResponse {
-  return { status: undefined, id: undefined };
-}
-
-export const PropertyIdentifierResponse: MessageFns<PropertyIdentifierResponse> = {
-  encode(message: PropertyIdentifierResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    if (message.id !== undefined) {
-      PropertyIdentifier.encode(message.id, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): PropertyIdentifierResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBasePropertyIdentifierResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.id = PropertyIdentifier.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): PropertyIdentifierResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      id: isSet(object.id) ? PropertyIdentifier.fromJSON(object.id) : undefined,
-    };
-  },
-
-  toJSON(message: PropertyIdentifierResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.id !== undefined) {
-      obj.id = PropertyIdentifier.toJSON(message.id);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<PropertyIdentifierResponse>, I>>(base?: I): PropertyIdentifierResponse {
-    return PropertyIdentifierResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<PropertyIdentifierResponse>, I>>(object: I): PropertyIdentifierResponse {
-    const message = createBasePropertyIdentifierResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
-    message.id = (object.id !== undefined && object.id !== null)
-      ? PropertyIdentifier.fromPartial(object.id)
-      : undefined;
     return message;
   },
 };
@@ -3050,12 +1996,12 @@ export const TimeSignature: MessageFns<TimeSignature> = {
   },
 };
 
-function createBaseTimings(): Timings {
+function createBaseCpuTimings(): CpuTimings {
   return { average: 0, min: 0, max: 0 };
 }
 
-export const Timings: MessageFns<Timings> = {
-  encode(message: Timings, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const CpuTimings: MessageFns<CpuTimings> = {
+  encode(message: CpuTimings, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.average !== 0) {
       writer.uint32(13).float(message.average);
     }
@@ -3068,10 +2014,10 @@ export const Timings: MessageFns<Timings> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): Timings {
+  decode(input: BinaryReader | Uint8Array, length?: number): CpuTimings {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseTimings();
+    const message = createBaseCpuTimings();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -3108,7 +2054,7 @@ export const Timings: MessageFns<Timings> = {
     return message;
   },
 
-  fromJSON(object: any): Timings {
+  fromJSON(object: any): CpuTimings {
     return {
       average: isSet(object.average) ? globalThis.Number(object.average) : 0,
       min: isSet(object.min) ? globalThis.Number(object.min) : 0,
@@ -3116,7 +2062,7 @@ export const Timings: MessageFns<Timings> = {
     };
   },
 
-  toJSON(message: Timings): unknown {
+  toJSON(message: CpuTimings): unknown {
     const obj: any = {};
     if (message.average !== 0) {
       obj.average = message.average;
@@ -3130,170 +2076,14 @@ export const Timings: MessageFns<Timings> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<Timings>, I>>(base?: I): Timings {
-    return Timings.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<Timings>, I>>(object: I): Timings {
-    const message = createBaseTimings();
-    message.average = object.average ?? 0;
-    message.min = object.min ?? 0;
-    message.max = object.max ?? 0;
-    return message;
-  },
-};
-
-function createBaseCpuTimings(): CpuTimings {
-  return { main: undefined, threads: [] };
-}
-
-export const CpuTimings: MessageFns<CpuTimings> = {
-  encode(message: CpuTimings, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.main !== undefined) {
-      Timings.encode(message.main, writer.uint32(10).fork()).join();
-    }
-    for (const v of message.threads) {
-      Timings.encode(v!, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): CpuTimings {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseCpuTimings();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.main = Timings.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.threads.push(Timings.decode(reader, reader.uint32()));
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): CpuTimings {
-    return {
-      main: isSet(object.main) ? Timings.fromJSON(object.main) : undefined,
-      threads: globalThis.Array.isArray(object?.threads) ? object.threads.map((e: any) => Timings.fromJSON(e)) : [],
-    };
-  },
-
-  toJSON(message: CpuTimings): unknown {
-    const obj: any = {};
-    if (message.main !== undefined) {
-      obj.main = Timings.toJSON(message.main);
-    }
-    if (message.threads?.length) {
-      obj.threads = message.threads.map((e) => Timings.toJSON(e));
-    }
-    return obj;
-  },
-
   create<I extends Exact<DeepPartial<CpuTimings>, I>>(base?: I): CpuTimings {
     return CpuTimings.fromPartial(base ?? ({} as any));
   },
   fromPartial<I extends Exact<DeepPartial<CpuTimings>, I>>(object: I): CpuTimings {
     const message = createBaseCpuTimings();
-    message.main = (object.main !== undefined && object.main !== null) ? Timings.fromPartial(object.main) : undefined;
-    message.threads = object.threads?.map((e) => Timings.fromPartial(e)) || [];
-    return message;
-  },
-};
-
-function createBaseTimingResponse(): TimingResponse {
-  return { status: undefined, timings: undefined };
-}
-
-export const TimingResponse: MessageFns<TimingResponse> = {
-  encode(message: TimingResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    if (message.timings !== undefined) {
-      Timings.encode(message.timings, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): TimingResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseTimingResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.timings = Timings.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): TimingResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      timings: isSet(object.timings) ? Timings.fromJSON(object.timings) : undefined,
-    };
-  },
-
-  toJSON(message: TimingResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.timings !== undefined) {
-      obj.timings = Timings.toJSON(message.timings);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<TimingResponse>, I>>(base?: I): TimingResponse {
-    return TimingResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<TimingResponse>, I>>(object: I): TimingResponse {
-    const message = createBaseTimingResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
-    message.timings = (object.timings !== undefined && object.timings !== null)
-      ? Timings.fromPartial(object.timings)
-      : undefined;
+    message.average = object.average ?? 0;
+    message.min = object.min ?? 0;
+    message.max = object.max ?? 0;
     return message;
   },
 };
@@ -3781,7 +2571,7 @@ export const TrackType: MessageFns<TrackType> = {
 };
 
 function createBaseTrackInfo(): TrackInfo {
-  return { id: 0, label: "", name: "", channels: 0, buses: 0, thread: 0, type: undefined, processors: [] };
+  return { id: 0, label: "", name: "", channels: 0, buses: 0, type: undefined, processors: [] };
 }
 
 export const TrackInfo: MessageFns<TrackInfo> = {
@@ -3801,14 +2591,11 @@ export const TrackInfo: MessageFns<TrackInfo> = {
     if (message.buses !== 0) {
       writer.uint32(40).int32(message.buses);
     }
-    if (message.thread !== 0) {
-      writer.uint32(48).int32(message.thread);
-    }
     if (message.type !== undefined) {
-      TrackType.encode(message.type, writer.uint32(58).fork()).join();
+      TrackType.encode(message.type, writer.uint32(50).fork()).join();
     }
     for (const v of message.processors) {
-      ProcessorIdentifier.encode(v!, writer.uint32(66).fork()).join();
+      ProcessorIdentifier.encode(v!, writer.uint32(58).fork()).join();
     }
     return writer;
   },
@@ -3861,23 +2648,15 @@ export const TrackInfo: MessageFns<TrackInfo> = {
           continue;
         }
         case 6: {
-          if (tag !== 48) {
-            break;
-          }
-
-          message.thread = reader.int32();
-          continue;
-        }
-        case 7: {
-          if (tag !== 58) {
+          if (tag !== 50) {
             break;
           }
 
           message.type = TrackType.decode(reader, reader.uint32());
           continue;
         }
-        case 8: {
-          if (tag !== 66) {
+        case 7: {
+          if (tag !== 58) {
             break;
           }
 
@@ -3900,7 +2679,6 @@ export const TrackInfo: MessageFns<TrackInfo> = {
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       channels: isSet(object.channels) ? globalThis.Number(object.channels) : 0,
       buses: isSet(object.buses) ? globalThis.Number(object.buses) : 0,
-      thread: isSet(object.thread) ? globalThis.Number(object.thread) : 0,
       type: isSet(object.type) ? TrackType.fromJSON(object.type) : undefined,
       processors: globalThis.Array.isArray(object?.processors)
         ? object.processors.map((e: any) => ProcessorIdentifier.fromJSON(e))
@@ -3925,9 +2703,6 @@ export const TrackInfo: MessageFns<TrackInfo> = {
     if (message.buses !== 0) {
       obj.buses = Math.round(message.buses);
     }
-    if (message.thread !== 0) {
-      obj.thread = Math.round(message.thread);
-    }
     if (message.type !== undefined) {
       obj.type = TrackType.toJSON(message.type);
     }
@@ -3947,87 +2722,8 @@ export const TrackInfo: MessageFns<TrackInfo> = {
     message.name = object.name ?? "";
     message.channels = object.channels ?? 0;
     message.buses = object.buses ?? 0;
-    message.thread = object.thread ?? 0;
     message.type = (object.type !== undefined && object.type !== null) ? TrackType.fromPartial(object.type) : undefined;
     message.processors = object.processors?.map((e) => ProcessorIdentifier.fromPartial(e)) || [];
-    return message;
-  },
-};
-
-function createBaseTrackInfoResponse(): TrackInfoResponse {
-  return { status: undefined, info: undefined };
-}
-
-export const TrackInfoResponse: MessageFns<TrackInfoResponse> = {
-  encode(message: TrackInfoResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    if (message.info !== undefined) {
-      TrackInfo.encode(message.info, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): TrackInfoResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseTrackInfoResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.info = TrackInfo.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): TrackInfoResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      info: isSet(object.info) ? TrackInfo.fromJSON(object.info) : undefined,
-    };
-  },
-
-  toJSON(message: TrackInfoResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.info !== undefined) {
-      obj.info = TrackInfo.toJSON(message.info);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<TrackInfoResponse>, I>>(base?: I): TrackInfoResponse {
-    return TrackInfoResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<TrackInfoResponse>, I>>(object: I): TrackInfoResponse {
-    const message = createBaseTrackInfoResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
-    message.info = (object.info !== undefined && object.info !== null) ? TrackInfo.fromPartial(object.info) : undefined;
     return message;
   },
 };
@@ -4216,86 +2912,6 @@ export const ProcessorInfo: MessageFns<ProcessorInfo> = {
   },
 };
 
-function createBaseProcessorInfoResponse(): ProcessorInfoResponse {
-  return { status: undefined, processor: undefined };
-}
-
-export const ProcessorInfoResponse: MessageFns<ProcessorInfoResponse> = {
-  encode(message: ProcessorInfoResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    if (message.processor !== undefined) {
-      ProcessorInfo.encode(message.processor, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ProcessorInfoResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseProcessorInfoResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.processor = ProcessorInfo.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ProcessorInfoResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      processor: isSet(object.processor) ? ProcessorInfo.fromJSON(object.processor) : undefined,
-    };
-  },
-
-  toJSON(message: ProcessorInfoResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.processor !== undefined) {
-      obj.processor = ProcessorInfo.toJSON(message.processor);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<ProcessorInfoResponse>, I>>(base?: I): ProcessorInfoResponse {
-    return ProcessorInfoResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<ProcessorInfoResponse>, I>>(object: I): ProcessorInfoResponse {
-    const message = createBaseProcessorInfoResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
-    message.processor = (object.processor !== undefined && object.processor !== null)
-      ? ProcessorInfo.fromPartial(object.processor)
-      : undefined;
-    return message;
-  },
-};
-
 function createBaseProcessorInfoList(): ProcessorInfoList {
   return { processors: [] };
 }
@@ -4358,86 +2974,6 @@ export const ProcessorInfoList: MessageFns<ProcessorInfoList> = {
   },
 };
 
-function createBaseProcessorInfoListResponse(): ProcessorInfoListResponse {
-  return { status: undefined, processors: [] };
-}
-
-export const ProcessorInfoListResponse: MessageFns<ProcessorInfoListResponse> = {
-  encode(message: ProcessorInfoListResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    for (const v of message.processors) {
-      ProcessorInfo.encode(v!, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ProcessorInfoListResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseProcessorInfoListResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.processors.push(ProcessorInfo.decode(reader, reader.uint32()));
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ProcessorInfoListResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      processors: globalThis.Array.isArray(object?.processors)
-        ? object.processors.map((e: any) => ProcessorInfo.fromJSON(e))
-        : [],
-    };
-  },
-
-  toJSON(message: ProcessorInfoListResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.processors?.length) {
-      obj.processors = message.processors.map((e) => ProcessorInfo.toJSON(e));
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<ProcessorInfoListResponse>, I>>(base?: I): ProcessorInfoListResponse {
-    return ProcessorInfoListResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<ProcessorInfoListResponse>, I>>(object: I): ProcessorInfoListResponse {
-    const message = createBaseProcessorInfoListResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
-    message.processors = object.processors?.map((e) => ProcessorInfo.fromPartial(e)) || [];
-    return message;
-  },
-};
-
 function createBaseProgramIdentifier(): ProgramIdentifier {
   return { program: 0 };
 }
@@ -4491,84 +3027,6 @@ export const ProgramIdentifier: MessageFns<ProgramIdentifier> = {
   },
   fromPartial<I extends Exact<DeepPartial<ProgramIdentifier>, I>>(object: I): ProgramIdentifier {
     const message = createBaseProgramIdentifier();
-    message.program = object.program ?? 0;
-    return message;
-  },
-};
-
-function createBaseProgramIdentifierResponse(): ProgramIdentifierResponse {
-  return { status: undefined, program: 0 };
-}
-
-export const ProgramIdentifierResponse: MessageFns<ProgramIdentifierResponse> = {
-  encode(message: ProgramIdentifierResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    if (message.program !== 0) {
-      writer.uint32(16).int32(message.program);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ProgramIdentifierResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseProgramIdentifierResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 16) {
-            break;
-          }
-
-          message.program = reader.int32();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ProgramIdentifierResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      program: isSet(object.program) ? globalThis.Number(object.program) : 0,
-    };
-  },
-
-  toJSON(message: ProgramIdentifierResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.program !== 0) {
-      obj.program = Math.round(message.program);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<ProgramIdentifierResponse>, I>>(base?: I): ProgramIdentifierResponse {
-    return ProgramIdentifierResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<ProgramIdentifierResponse>, I>>(object: I): ProgramIdentifierResponse {
-    const message = createBaseProgramIdentifierResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
     message.program = object.program ?? 0;
     return message;
   },
@@ -4785,86 +3243,6 @@ export const ProgramInfoList: MessageFns<ProgramInfoList> = {
   },
   fromPartial<I extends Exact<DeepPartial<ProgramInfoList>, I>>(object: I): ProgramInfoList {
     const message = createBaseProgramInfoList();
-    message.programs = object.programs?.map((e) => ProgramInfo.fromPartial(e)) || [];
-    return message;
-  },
-};
-
-function createBaseProgramInfoListResponse(): ProgramInfoListResponse {
-  return { status: undefined, programs: [] };
-}
-
-export const ProgramInfoListResponse: MessageFns<ProgramInfoListResponse> = {
-  encode(message: ProgramInfoListResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    for (const v of message.programs) {
-      ProgramInfo.encode(v!, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ProgramInfoListResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseProgramInfoListResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.programs.push(ProgramInfo.decode(reader, reader.uint32()));
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ProgramInfoListResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      programs: globalThis.Array.isArray(object?.programs)
-        ? object.programs.map((e: any) => ProgramInfo.fromJSON(e))
-        : [],
-    };
-  },
-
-  toJSON(message: ProgramInfoListResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.programs?.length) {
-      obj.programs = message.programs.map((e) => ProgramInfo.toJSON(e));
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<ProgramInfoListResponse>, I>>(base?: I): ProgramInfoListResponse {
-    return ProgramInfoListResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<ProgramInfoListResponse>, I>>(object: I): ProgramInfoListResponse {
-    const message = createBaseProgramInfoListResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
     message.programs = object.programs?.map((e) => ProgramInfo.fromPartial(e)) || [];
     return message;
   },
@@ -5162,86 +3540,6 @@ export const ProcessorState: MessageFns<ProcessorState> = {
   },
 };
 
-function createBaseProcessorStateResponse(): ProcessorStateResponse {
-  return { status: undefined, state: undefined };
-}
-
-export const ProcessorStateResponse: MessageFns<ProcessorStateResponse> = {
-  encode(message: ProcessorStateResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    if (message.state !== undefined) {
-      ProcessorState.encode(message.state, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ProcessorStateResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseProcessorStateResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.state = ProcessorState.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ProcessorStateResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      state: isSet(object.state) ? ProcessorState.fromJSON(object.state) : undefined,
-    };
-  },
-
-  toJSON(message: ProcessorStateResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.state !== undefined) {
-      obj.state = ProcessorState.toJSON(message.state);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<ProcessorStateResponse>, I>>(base?: I): ProcessorStateResponse {
-    return ProcessorStateResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<ProcessorStateResponse>, I>>(object: I): ProcessorStateResponse {
-    const message = createBaseProcessorStateResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
-    message.state = (object.state !== undefined && object.state !== null)
-      ? ProcessorState.fromPartial(object.state)
-      : undefined;
-    return message;
-  },
-};
-
 function createBaseProcessorStateSetRequest(): ProcessorStateSetRequest {
   return { processor: undefined, state: undefined };
 }
@@ -5505,86 +3803,6 @@ export const ParameterInfo: MessageFns<ParameterInfo> = {
   },
 };
 
-function createBaseParameterInfoResponse(): ParameterInfoResponse {
-  return { status: undefined, info: undefined };
-}
-
-export const ParameterInfoResponse: MessageFns<ParameterInfoResponse> = {
-  encode(message: ParameterInfoResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    if (message.info !== undefined) {
-      ParameterInfo.encode(message.info, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ParameterInfoResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseParameterInfoResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.info = ParameterInfo.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ParameterInfoResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      info: isSet(object.info) ? ParameterInfo.fromJSON(object.info) : undefined,
-    };
-  },
-
-  toJSON(message: ParameterInfoResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.info !== undefined) {
-      obj.info = ParameterInfo.toJSON(message.info);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<ParameterInfoResponse>, I>>(base?: I): ParameterInfoResponse {
-    return ParameterInfoResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<ParameterInfoResponse>, I>>(object: I): ParameterInfoResponse {
-    const message = createBaseParameterInfoResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
-    message.info = (object.info !== undefined && object.info !== null)
-      ? ParameterInfo.fromPartial(object.info)
-      : undefined;
-    return message;
-  },
-};
-
 function createBaseParameterInfoList(): ParameterInfoList {
   return { parameters: [] };
 }
@@ -5642,86 +3860,6 @@ export const ParameterInfoList: MessageFns<ParameterInfoList> = {
   },
   fromPartial<I extends Exact<DeepPartial<ParameterInfoList>, I>>(object: I): ParameterInfoList {
     const message = createBaseParameterInfoList();
-    message.parameters = object.parameters?.map((e) => ParameterInfo.fromPartial(e)) || [];
-    return message;
-  },
-};
-
-function createBaseParameterInfoListResponse(): ParameterInfoListResponse {
-  return { status: undefined, parameters: [] };
-}
-
-export const ParameterInfoListResponse: MessageFns<ParameterInfoListResponse> = {
-  encode(message: ParameterInfoListResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    for (const v of message.parameters) {
-      ParameterInfo.encode(v!, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ParameterInfoListResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseParameterInfoListResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.parameters.push(ParameterInfo.decode(reader, reader.uint32()));
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ParameterInfoListResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      parameters: globalThis.Array.isArray(object?.parameters)
-        ? object.parameters.map((e: any) => ParameterInfo.fromJSON(e))
-        : [],
-    };
-  },
-
-  toJSON(message: ParameterInfoListResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.parameters?.length) {
-      obj.parameters = message.parameters.map((e) => ParameterInfo.toJSON(e));
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<ParameterInfoListResponse>, I>>(base?: I): ParameterInfoListResponse {
-    return ParameterInfoListResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<ParameterInfoListResponse>, I>>(object: I): ParameterInfoListResponse {
-    const message = createBaseParameterInfoListResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
     message.parameters = object.parameters?.map((e) => ParameterInfo.fromPartial(e)) || [];
     return message;
   },
@@ -6085,86 +4223,6 @@ export const PropertyInfo: MessageFns<PropertyInfo> = {
   },
 };
 
-function createBasePropertyInfoResponse(): PropertyInfoResponse {
-  return { status: undefined, info: undefined };
-}
-
-export const PropertyInfoResponse: MessageFns<PropertyInfoResponse> = {
-  encode(message: PropertyInfoResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    if (message.info !== undefined) {
-      PropertyInfo.encode(message.info, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): PropertyInfoResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBasePropertyInfoResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.info = PropertyInfo.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): PropertyInfoResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      info: isSet(object.info) ? PropertyInfo.fromJSON(object.info) : undefined,
-    };
-  },
-
-  toJSON(message: PropertyInfoResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.info !== undefined) {
-      obj.info = PropertyInfo.toJSON(message.info);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<PropertyInfoResponse>, I>>(base?: I): PropertyInfoResponse {
-    return PropertyInfoResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<PropertyInfoResponse>, I>>(object: I): PropertyInfoResponse {
-    const message = createBasePropertyInfoResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
-    message.info = (object.info !== undefined && object.info !== null)
-      ? PropertyInfo.fromPartial(object.info)
-      : undefined;
-    return message;
-  },
-};
-
 function createBasePropertyInfoList(): PropertyInfoList {
   return { properties: [] };
 }
@@ -6222,86 +4280,6 @@ export const PropertyInfoList: MessageFns<PropertyInfoList> = {
   },
   fromPartial<I extends Exact<DeepPartial<PropertyInfoList>, I>>(object: I): PropertyInfoList {
     const message = createBasePropertyInfoList();
-    message.properties = object.properties?.map((e) => PropertyInfo.fromPartial(e)) || [];
-    return message;
-  },
-};
-
-function createBasePropertyInfoListResponse(): PropertyInfoListResponse {
-  return { status: undefined, properties: [] };
-}
-
-export const PropertyInfoListResponse: MessageFns<PropertyInfoListResponse> = {
-  encode(message: PropertyInfoListResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    for (const v of message.properties) {
-      PropertyInfo.encode(v!, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): PropertyInfoListResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBasePropertyInfoListResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.properties.push(PropertyInfo.decode(reader, reader.uint32()));
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): PropertyInfoListResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      properties: globalThis.Array.isArray(object?.properties)
-        ? object.properties.map((e: any) => PropertyInfo.fromJSON(e))
-        : [],
-    };
-  },
-
-  toJSON(message: PropertyInfoListResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.properties?.length) {
-      obj.properties = message.properties.map((e) => PropertyInfo.toJSON(e));
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<PropertyInfoListResponse>, I>>(base?: I): PropertyInfoListResponse {
-    return PropertyInfoListResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<PropertyInfoListResponse>, I>>(object: I): PropertyInfoListResponse {
-    const message = createBasePropertyInfoListResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
     message.properties = object.properties?.map((e) => PropertyInfo.fromPartial(e)) || [];
     return message;
   },
@@ -6600,7 +4578,7 @@ export const ProcessorPosition: MessageFns<ProcessorPosition> = {
 };
 
 function createBaseCreateTrackRequest(): CreateTrackRequest {
-  return { name: "", channels: 0, thread: undefined };
+  return { name: "", channels: 0 };
 }
 
 export const CreateTrackRequest: MessageFns<CreateTrackRequest> = {
@@ -6610,9 +4588,6 @@ export const CreateTrackRequest: MessageFns<CreateTrackRequest> = {
     }
     if (message.channels !== 0) {
       writer.uint32(16).int32(message.channels);
-    }
-    if (message.thread !== undefined) {
-      OptionalIntValue.encode(message.thread, writer.uint32(26).fork()).join();
     }
     return writer;
   },
@@ -6640,14 +4615,6 @@ export const CreateTrackRequest: MessageFns<CreateTrackRequest> = {
           message.channels = reader.int32();
           continue;
         }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.thread = OptionalIntValue.decode(reader, reader.uint32());
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -6661,7 +4628,6 @@ export const CreateTrackRequest: MessageFns<CreateTrackRequest> = {
     return {
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       channels: isSet(object.channels) ? globalThis.Number(object.channels) : 0,
-      thread: isSet(object.thread) ? OptionalIntValue.fromJSON(object.thread) : undefined,
     };
   },
 
@@ -6673,9 +4639,6 @@ export const CreateTrackRequest: MessageFns<CreateTrackRequest> = {
     if (message.channels !== 0) {
       obj.channels = Math.round(message.channels);
     }
-    if (message.thread !== undefined) {
-      obj.thread = OptionalIntValue.toJSON(message.thread);
-    }
     return obj;
   },
 
@@ -6686,15 +4649,12 @@ export const CreateTrackRequest: MessageFns<CreateTrackRequest> = {
     const message = createBaseCreateTrackRequest();
     message.name = object.name ?? "";
     message.channels = object.channels ?? 0;
-    message.thread = (object.thread !== undefined && object.thread !== null)
-      ? OptionalIntValue.fromPartial(object.thread)
-      : undefined;
     return message;
   },
 };
 
 function createBaseCreateMultibusTrackRequest(): CreateMultibusTrackRequest {
-  return { name: "", buses: 0, thread: undefined };
+  return { name: "", buses: 0 };
 }
 
 export const CreateMultibusTrackRequest: MessageFns<CreateMultibusTrackRequest> = {
@@ -6704,9 +4664,6 @@ export const CreateMultibusTrackRequest: MessageFns<CreateMultibusTrackRequest> 
     }
     if (message.buses !== 0) {
       writer.uint32(16).int32(message.buses);
-    }
-    if (message.thread !== undefined) {
-      OptionalIntValue.encode(message.thread, writer.uint32(26).fork()).join();
     }
     return writer;
   },
@@ -6734,14 +4691,6 @@ export const CreateMultibusTrackRequest: MessageFns<CreateMultibusTrackRequest> 
           message.buses = reader.int32();
           continue;
         }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.thread = OptionalIntValue.decode(reader, reader.uint32());
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -6755,7 +4704,6 @@ export const CreateMultibusTrackRequest: MessageFns<CreateMultibusTrackRequest> 
     return {
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       buses: isSet(object.buses) ? globalThis.Number(object.buses) : 0,
-      thread: isSet(object.thread) ? OptionalIntValue.fromJSON(object.thread) : undefined,
     };
   },
 
@@ -6767,9 +4715,6 @@ export const CreateMultibusTrackRequest: MessageFns<CreateMultibusTrackRequest> 
     if (message.buses !== 0) {
       obj.buses = Math.round(message.buses);
     }
-    if (message.thread !== undefined) {
-      obj.thread = OptionalIntValue.toJSON(message.thread);
-    }
     return obj;
   },
 
@@ -6780,9 +4725,6 @@ export const CreateMultibusTrackRequest: MessageFns<CreateMultibusTrackRequest> 
     const message = createBaseCreateMultibusTrackRequest();
     message.name = object.name ?? "";
     message.buses = object.buses ?? 0;
-    message.thread = (object.thread !== undefined && object.thread !== null)
-      ? OptionalIntValue.fromPartial(object.thread)
-      : undefined;
     return message;
   },
 };
@@ -7587,86 +5529,6 @@ export const AudioConnectionList: MessageFns<AudioConnectionList> = {
   },
 };
 
-function createBaseAudioConnectionListResponse(): AudioConnectionListResponse {
-  return { status: undefined, connections: [] };
-}
-
-export const AudioConnectionListResponse: MessageFns<AudioConnectionListResponse> = {
-  encode(message: AudioConnectionListResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    for (const v of message.connections) {
-      AudioConnection.encode(v!, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): AudioConnectionListResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseAudioConnectionListResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.connections.push(AudioConnection.decode(reader, reader.uint32()));
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): AudioConnectionListResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      connections: globalThis.Array.isArray(object?.connections)
-        ? object.connections.map((e: any) => AudioConnection.fromJSON(e))
-        : [],
-    };
-  },
-
-  toJSON(message: AudioConnectionListResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.connections?.length) {
-      obj.connections = message.connections.map((e) => AudioConnection.toJSON(e));
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<AudioConnectionListResponse>, I>>(base?: I): AudioConnectionListResponse {
-    return AudioConnectionListResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<AudioConnectionListResponse>, I>>(object: I): AudioConnectionListResponse {
-    const message = createBaseAudioConnectionListResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
-    message.connections = object.connections?.map((e) => AudioConnection.fromPartial(e)) || [];
-    return message;
-  },
-};
-
 function createBaseCvConnection(): CvConnection {
   return { parameter: undefined, cvPortId: 0 };
 }
@@ -7802,86 +5664,6 @@ export const CvConnectionList: MessageFns<CvConnectionList> = {
   },
   fromPartial<I extends Exact<DeepPartial<CvConnectionList>, I>>(object: I): CvConnectionList {
     const message = createBaseCvConnectionList();
-    message.connections = object.connections?.map((e) => CvConnection.fromPartial(e)) || [];
-    return message;
-  },
-};
-
-function createBaseCvConnectionListResponse(): CvConnectionListResponse {
-  return { status: undefined, connections: [] };
-}
-
-export const CvConnectionListResponse: MessageFns<CvConnectionListResponse> = {
-  encode(message: CvConnectionListResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    for (const v of message.connections) {
-      CvConnection.encode(v!, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): CvConnectionListResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseCvConnectionListResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.connections.push(CvConnection.decode(reader, reader.uint32()));
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): CvConnectionListResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      connections: globalThis.Array.isArray(object?.connections)
-        ? object.connections.map((e: any) => CvConnection.fromJSON(e))
-        : [],
-    };
-  },
-
-  toJSON(message: CvConnectionListResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.connections?.length) {
-      obj.connections = message.connections.map((e) => CvConnection.toJSON(e));
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<CvConnectionListResponse>, I>>(base?: I): CvConnectionListResponse {
-    return CvConnectionListResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<CvConnectionListResponse>, I>>(object: I): CvConnectionListResponse {
-    const message = createBaseCvConnectionListResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
     message.connections = object.connections?.map((e) => CvConnection.fromPartial(e)) || [];
     return message;
   },
@@ -8054,86 +5836,6 @@ export const GateConnectionList: MessageFns<GateConnectionList> = {
   },
   fromPartial<I extends Exact<DeepPartial<GateConnectionList>, I>>(object: I): GateConnectionList {
     const message = createBaseGateConnectionList();
-    message.connections = object.connections?.map((e) => GateConnection.fromPartial(e)) || [];
-    return message;
-  },
-};
-
-function createBaseGateConnectionListResponse(): GateConnectionListResponse {
-  return { status: undefined, connections: [] };
-}
-
-export const GateConnectionListResponse: MessageFns<GateConnectionListResponse> = {
-  encode(message: GateConnectionListResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    for (const v of message.connections) {
-      GateConnection.encode(v!, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): GateConnectionListResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGateConnectionListResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.connections.push(GateConnection.decode(reader, reader.uint32()));
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): GateConnectionListResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      connections: globalThis.Array.isArray(object?.connections)
-        ? object.connections.map((e: any) => GateConnection.fromJSON(e))
-        : [],
-    };
-  },
-
-  toJSON(message: GateConnectionListResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.connections?.length) {
-      obj.connections = message.connections.map((e) => GateConnection.toJSON(e));
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<GateConnectionListResponse>, I>>(base?: I): GateConnectionListResponse {
-    return GateConnectionListResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<GateConnectionListResponse>, I>>(object: I): GateConnectionListResponse {
-    const message = createBaseGateConnectionListResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
     message.connections = object.connections?.map((e) => GateConnection.fromPartial(e)) || [];
     return message;
   },
@@ -8543,86 +6245,6 @@ export const MidiCCConnectionList: MessageFns<MidiCCConnectionList> = {
   },
 };
 
-function createBaseMidiCCConnectionListResponse(): MidiCCConnectionListResponse {
-  return { status: undefined, connections: [] };
-}
-
-export const MidiCCConnectionListResponse: MessageFns<MidiCCConnectionListResponse> = {
-  encode(message: MidiCCConnectionListResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    for (const v of message.connections) {
-      MidiCCConnection.encode(v!, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): MidiCCConnectionListResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMidiCCConnectionListResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.connections.push(MidiCCConnection.decode(reader, reader.uint32()));
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MidiCCConnectionListResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      connections: globalThis.Array.isArray(object?.connections)
-        ? object.connections.map((e: any) => MidiCCConnection.fromJSON(e))
-        : [],
-    };
-  },
-
-  toJSON(message: MidiCCConnectionListResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.connections?.length) {
-      obj.connections = message.connections.map((e) => MidiCCConnection.toJSON(e));
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<MidiCCConnectionListResponse>, I>>(base?: I): MidiCCConnectionListResponse {
-    return MidiCCConnectionListResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<MidiCCConnectionListResponse>, I>>(object: I): MidiCCConnectionListResponse {
-    const message = createBaseMidiCCConnectionListResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
-    message.connections = object.connections?.map((e) => MidiCCConnection.fromPartial(e)) || [];
-    return message;
-  },
-};
-
 function createBaseMidiPCConnection(): MidiPCConnection {
   return { processor: undefined, channel: undefined, port: 0 };
 }
@@ -8776,86 +6398,6 @@ export const MidiPCConnectionList: MessageFns<MidiPCConnectionList> = {
   },
   fromPartial<I extends Exact<DeepPartial<MidiPCConnectionList>, I>>(object: I): MidiPCConnectionList {
     const message = createBaseMidiPCConnectionList();
-    message.connections = object.connections?.map((e) => MidiPCConnection.fromPartial(e)) || [];
-    return message;
-  },
-};
-
-function createBaseMidiPCConnectionListResponse(): MidiPCConnectionListResponse {
-  return { status: undefined, connections: [] };
-}
-
-export const MidiPCConnectionListResponse: MessageFns<MidiPCConnectionListResponse> = {
-  encode(message: MidiPCConnectionListResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.status !== undefined) {
-      CommandStatus.encode(message.status, writer.uint32(10).fork()).join();
-    }
-    for (const v of message.connections) {
-      MidiPCConnection.encode(v!, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): MidiPCConnectionListResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMidiPCConnectionListResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.status = CommandStatus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.connections.push(MidiPCConnection.decode(reader, reader.uint32()));
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MidiPCConnectionListResponse {
-    return {
-      status: isSet(object.status) ? CommandStatus.fromJSON(object.status) : undefined,
-      connections: globalThis.Array.isArray(object?.connections)
-        ? object.connections.map((e: any) => MidiPCConnection.fromJSON(e))
-        : [],
-    };
-  },
-
-  toJSON(message: MidiPCConnectionListResponse): unknown {
-    const obj: any = {};
-    if (message.status !== undefined) {
-      obj.status = CommandStatus.toJSON(message.status);
-    }
-    if (message.connections?.length) {
-      obj.connections = message.connections.map((e) => MidiPCConnection.toJSON(e));
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<MidiPCConnectionListResponse>, I>>(base?: I): MidiPCConnectionListResponse {
-    return MidiPCConnectionListResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<MidiPCConnectionListResponse>, I>>(object: I): MidiPCConnectionListResponse {
-    const message = createBaseMidiPCConnectionListResponse();
-    message.status = (object.status !== undefined && object.status !== null)
-      ? CommandStatus.fromPartial(object.status)
-      : undefined;
     message.connections = object.connections?.map((e) => MidiPCConnection.fromPartial(e)) || [];
     return message;
   },
@@ -10525,16 +8067,7 @@ export const PluginClass: MessageFns<PluginClass> = {
 };
 
 function createBaseTrackState(): TrackState {
-  return {
-    name: "",
-    label: "",
-    channels: 0,
-    buses: 0,
-    thread: 0,
-    type: undefined,
-    trackState: undefined,
-    processors: [],
-  };
+  return { name: "", label: "", channels: 0, buses: 0, type: undefined, trackState: undefined, processors: [] };
 }
 
 export const TrackState: MessageFns<TrackState> = {
@@ -10551,17 +8084,14 @@ export const TrackState: MessageFns<TrackState> = {
     if (message.buses !== 0) {
       writer.uint32(32).int32(message.buses);
     }
-    if (message.thread !== 0) {
-      writer.uint32(40).int32(message.thread);
-    }
     if (message.type !== undefined) {
-      TrackType.encode(message.type, writer.uint32(50).fork()).join();
+      TrackType.encode(message.type, writer.uint32(42).fork()).join();
     }
     if (message.trackState !== undefined) {
-      ProcessorState.encode(message.trackState, writer.uint32(58).fork()).join();
+      ProcessorState.encode(message.trackState, writer.uint32(50).fork()).join();
     }
     for (const v of message.processors) {
-      PluginClass.encode(v!, writer.uint32(66).fork()).join();
+      PluginClass.encode(v!, writer.uint32(58).fork()).join();
     }
     return writer;
   },
@@ -10606,11 +8136,11 @@ export const TrackState: MessageFns<TrackState> = {
           continue;
         }
         case 5: {
-          if (tag !== 40) {
+          if (tag !== 42) {
             break;
           }
 
-          message.thread = reader.int32();
+          message.type = TrackType.decode(reader, reader.uint32());
           continue;
         }
         case 6: {
@@ -10618,19 +8148,11 @@ export const TrackState: MessageFns<TrackState> = {
             break;
           }
 
-          message.type = TrackType.decode(reader, reader.uint32());
+          message.trackState = ProcessorState.decode(reader, reader.uint32());
           continue;
         }
         case 7: {
           if (tag !== 58) {
-            break;
-          }
-
-          message.trackState = ProcessorState.decode(reader, reader.uint32());
-          continue;
-        }
-        case 8: {
-          if (tag !== 66) {
             break;
           }
 
@@ -10652,7 +8174,6 @@ export const TrackState: MessageFns<TrackState> = {
       label: isSet(object.label) ? globalThis.String(object.label) : "",
       channels: isSet(object.channels) ? globalThis.Number(object.channels) : 0,
       buses: isSet(object.buses) ? globalThis.Number(object.buses) : 0,
-      thread: isSet(object.thread) ? globalThis.Number(object.thread) : 0,
       type: isSet(object.type) ? TrackType.fromJSON(object.type) : undefined,
       trackState: isSet(object.trackState) ? ProcessorState.fromJSON(object.trackState) : undefined,
       processors: globalThis.Array.isArray(object?.processors)
@@ -10675,9 +8196,6 @@ export const TrackState: MessageFns<TrackState> = {
     if (message.buses !== 0) {
       obj.buses = Math.round(message.buses);
     }
-    if (message.thread !== 0) {
-      obj.thread = Math.round(message.thread);
-    }
     if (message.type !== undefined) {
       obj.type = TrackType.toJSON(message.type);
     }
@@ -10699,7 +8217,6 @@ export const TrackState: MessageFns<TrackState> = {
     message.label = object.label ?? "";
     message.channels = object.channels ?? 0;
     message.buses = object.buses ?? 0;
-    message.thread = object.thread ?? 0;
     message.type = (object.type !== undefined && object.type !== null) ? TrackType.fromPartial(object.type) : undefined;
     message.trackState = (object.trackState !== undefined && object.trackState !== null)
       ? ProcessorState.fromPartial(object.trackState)
@@ -10866,7 +8383,6 @@ export const SessionState: MessageFns<SessionState> = {
 
 export interface SystemController {
   GetSushiVersion(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<GenericStringValue>;
-  GetSushiApiVersion(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<GenericStringValue>;
   GetBuildInfo(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<SushiBuildInfo>;
   GetInputAudioChannelCount(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<GenericIntValue>;
   GetOutputAudioChannelCount(
@@ -10881,7 +8397,6 @@ export class SystemControllerClientImpl implements SystemController {
   constructor(rpc: Rpc) {
     this.rpc = rpc;
     this.GetSushiVersion = this.GetSushiVersion.bind(this);
-    this.GetSushiApiVersion = this.GetSushiApiVersion.bind(this);
     this.GetBuildInfo = this.GetBuildInfo.bind(this);
     this.GetInputAudioChannelCount = this.GetInputAudioChannelCount.bind(this);
     this.GetOutputAudioChannelCount = this.GetOutputAudioChannelCount.bind(this);
@@ -10889,10 +8404,6 @@ export class SystemControllerClientImpl implements SystemController {
 
   GetSushiVersion(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<GenericStringValue> {
     return this.rpc.unary(SystemControllerGetSushiVersionDesc, GenericVoidValue.fromPartial(request), metadata);
-  }
-
-  GetSushiApiVersion(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<GenericStringValue> {
-    return this.rpc.unary(SystemControllerGetSushiApiVersionDesc, GenericVoidValue.fromPartial(request), metadata);
   }
 
   GetBuildInfo(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<SushiBuildInfo> {
@@ -10926,29 +8437,6 @@ export const SystemControllerDesc = { serviceName: "sushi_rpc.SystemController" 
 
 export const SystemControllerGetSushiVersionDesc: UnaryMethodDefinitionish = {
   methodName: "GetSushiVersion",
-  service: SystemControllerDesc,
-  requestStream: false,
-  responseStream: false,
-  requestType: {
-    serializeBinary() {
-      return GenericVoidValue.encode(this).finish();
-    },
-  } as any,
-  responseType: {
-    deserializeBinary(data: Uint8Array) {
-      const value = GenericStringValue.decode(data);
-      return {
-        ...value,
-        toObject() {
-          return value;
-        },
-      };
-    },
-  } as any,
-};
-
-export const SystemControllerGetSushiApiVersionDesc: UnaryMethodDefinitionish = {
-  methodName: "GetSushiApiVersion",
   service: SystemControllerDesc,
   requestStream: false,
   responseStream: false,
@@ -11045,10 +8533,10 @@ export interface TransportController {
   GetSyncMode(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<SyncMode>;
   GetTimeSignature(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<TimeSignature>;
   GetTempo(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<GenericFloatValue>;
-  SetTempo(request: DeepPartial<GenericFloatValue>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  SetPlayingMode(request: DeepPartial<PlayingMode>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  SetSyncMode(request: DeepPartial<SyncMode>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  SetTimeSignature(request: DeepPartial<TimeSignature>, metadata?: grpc.Metadata): Promise<CommandResponse>;
+  SetTempo(request: DeepPartial<GenericFloatValue>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  SetPlayingMode(request: DeepPartial<PlayingMode>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  SetSyncMode(request: DeepPartial<SyncMode>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  SetTimeSignature(request: DeepPartial<TimeSignature>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
 }
 
 export class TransportControllerClientImpl implements TransportController {
@@ -11087,19 +8575,19 @@ export class TransportControllerClientImpl implements TransportController {
     return this.rpc.unary(TransportControllerGetTempoDesc, GenericVoidValue.fromPartial(request), metadata);
   }
 
-  SetTempo(request: DeepPartial<GenericFloatValue>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  SetTempo(request: DeepPartial<GenericFloatValue>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(TransportControllerSetTempoDesc, GenericFloatValue.fromPartial(request), metadata);
   }
 
-  SetPlayingMode(request: DeepPartial<PlayingMode>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  SetPlayingMode(request: DeepPartial<PlayingMode>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(TransportControllerSetPlayingModeDesc, PlayingMode.fromPartial(request), metadata);
   }
 
-  SetSyncMode(request: DeepPartial<SyncMode>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  SetSyncMode(request: DeepPartial<SyncMode>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(TransportControllerSetSyncModeDesc, SyncMode.fromPartial(request), metadata);
   }
 
-  SetTimeSignature(request: DeepPartial<TimeSignature>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  SetTimeSignature(request: DeepPartial<TimeSignature>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(TransportControllerSetTimeSignatureDesc, TimeSignature.fromPartial(request), metadata);
   }
 }
@@ -11233,7 +8721,7 @@ export const TransportControllerSetTempoDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -11256,7 +8744,7 @@ export const TransportControllerSetPlayingModeDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -11279,7 +8767,7 @@ export const TransportControllerSetSyncModeDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -11302,7 +8790,7 @@ export const TransportControllerSetTimeSignatureDesc: UnaryMethodDefinitionish =
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -11315,13 +8803,13 @@ export const TransportControllerSetTimeSignatureDesc: UnaryMethodDefinitionish =
 
 export interface TimingController {
   GetTimingsEnabled(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<GenericBoolValue>;
-  SetTimingsEnabled(request: DeepPartial<GenericBoolValue>, metadata?: grpc.Metadata): Promise<CommandResponse>;
+  SetTimingsEnabled(request: DeepPartial<GenericBoolValue>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
   GetEngineTimings(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<CpuTimings>;
-  GetTrackTimings(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<TimingResponse>;
-  GetProcessorTimings(request: DeepPartial<ProcessorIdentifier>, metadata?: grpc.Metadata): Promise<TimingResponse>;
-  ResetAllTimings(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  ResetTrackTimings(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  ResetProcessorTimings(request: DeepPartial<ProcessorIdentifier>, metadata?: grpc.Metadata): Promise<CommandResponse>;
+  GetTrackTimings(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<CpuTimings>;
+  GetProcessorTimings(request: DeepPartial<ProcessorIdentifier>, metadata?: grpc.Metadata): Promise<CpuTimings>;
+  ResetAllTimings(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  ResetTrackTimings(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  ResetProcessorTimings(request: DeepPartial<ProcessorIdentifier>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
 }
 
 export class TimingControllerClientImpl implements TimingController {
@@ -11343,7 +8831,7 @@ export class TimingControllerClientImpl implements TimingController {
     return this.rpc.unary(TimingControllerGetTimingsEnabledDesc, GenericVoidValue.fromPartial(request), metadata);
   }
 
-  SetTimingsEnabled(request: DeepPartial<GenericBoolValue>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  SetTimingsEnabled(request: DeepPartial<GenericBoolValue>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(TimingControllerSetTimingsEnabledDesc, GenericBoolValue.fromPartial(request), metadata);
   }
 
@@ -11351,23 +8839,26 @@ export class TimingControllerClientImpl implements TimingController {
     return this.rpc.unary(TimingControllerGetEngineTimingsDesc, GenericVoidValue.fromPartial(request), metadata);
   }
 
-  GetTrackTimings(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<TimingResponse> {
+  GetTrackTimings(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<CpuTimings> {
     return this.rpc.unary(TimingControllerGetTrackTimingsDesc, TrackIdentifier.fromPartial(request), metadata);
   }
 
-  GetProcessorTimings(request: DeepPartial<ProcessorIdentifier>, metadata?: grpc.Metadata): Promise<TimingResponse> {
+  GetProcessorTimings(request: DeepPartial<ProcessorIdentifier>, metadata?: grpc.Metadata): Promise<CpuTimings> {
     return this.rpc.unary(TimingControllerGetProcessorTimingsDesc, ProcessorIdentifier.fromPartial(request), metadata);
   }
 
-  ResetAllTimings(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  ResetAllTimings(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(TimingControllerResetAllTimingsDesc, GenericVoidValue.fromPartial(request), metadata);
   }
 
-  ResetTrackTimings(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  ResetTrackTimings(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(TimingControllerResetTrackTimingsDesc, TrackIdentifier.fromPartial(request), metadata);
   }
 
-  ResetProcessorTimings(request: DeepPartial<ProcessorIdentifier>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  ResetProcessorTimings(
+    request: DeepPartial<ProcessorIdentifier>,
+    metadata?: grpc.Metadata,
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       TimingControllerResetProcessorTimingsDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -11413,7 +8904,7 @@ export const TimingControllerSetTimingsEnabledDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -11459,7 +8950,7 @@ export const TimingControllerGetTrackTimingsDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = TimingResponse.decode(data);
+      const value = CpuTimings.decode(data);
       return {
         ...value,
         toObject() {
@@ -11482,7 +8973,7 @@ export const TimingControllerGetProcessorTimingsDesc: UnaryMethodDefinitionish =
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = TimingResponse.decode(data);
+      const value = CpuTimings.decode(data);
       return {
         ...value,
         toObject() {
@@ -11505,7 +8996,7 @@ export const TimingControllerResetAllTimingsDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -11528,7 +9019,7 @@ export const TimingControllerResetTrackTimingsDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -11551,7 +9042,7 @@ export const TimingControllerResetProcessorTimingsDesc: UnaryMethodDefinitionish
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -11563,12 +9054,12 @@ export const TimingControllerResetProcessorTimingsDesc: UnaryMethodDefinitionish
 };
 
 export interface KeyboardController {
-  SendNoteOn(request: DeepPartial<NoteOnRequest>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  SendNoteOff(request: DeepPartial<NoteOffRequest>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  SendNoteAftertouch(request: DeepPartial<NoteAftertouchRequest>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  SendAftertouch(request: DeepPartial<NoteModulationRequest>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  SendPitchBend(request: DeepPartial<NoteModulationRequest>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  SendModulation(request: DeepPartial<NoteModulationRequest>, metadata?: grpc.Metadata): Promise<CommandResponse>;
+  SendNoteOn(request: DeepPartial<NoteOnRequest>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  SendNoteOff(request: DeepPartial<NoteOffRequest>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  SendNoteAftertouch(request: DeepPartial<NoteAftertouchRequest>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  SendAftertouch(request: DeepPartial<NoteModulationRequest>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  SendPitchBend(request: DeepPartial<NoteModulationRequest>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  SendModulation(request: DeepPartial<NoteModulationRequest>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
 }
 
 export class KeyboardControllerClientImpl implements KeyboardController {
@@ -11584,15 +9075,15 @@ export class KeyboardControllerClientImpl implements KeyboardController {
     this.SendModulation = this.SendModulation.bind(this);
   }
 
-  SendNoteOn(request: DeepPartial<NoteOnRequest>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  SendNoteOn(request: DeepPartial<NoteOnRequest>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(KeyboardControllerSendNoteOnDesc, NoteOnRequest.fromPartial(request), metadata);
   }
 
-  SendNoteOff(request: DeepPartial<NoteOffRequest>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  SendNoteOff(request: DeepPartial<NoteOffRequest>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(KeyboardControllerSendNoteOffDesc, NoteOffRequest.fromPartial(request), metadata);
   }
 
-  SendNoteAftertouch(request: DeepPartial<NoteAftertouchRequest>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  SendNoteAftertouch(request: DeepPartial<NoteAftertouchRequest>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(
       KeyboardControllerSendNoteAftertouchDesc,
       NoteAftertouchRequest.fromPartial(request),
@@ -11600,15 +9091,15 @@ export class KeyboardControllerClientImpl implements KeyboardController {
     );
   }
 
-  SendAftertouch(request: DeepPartial<NoteModulationRequest>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  SendAftertouch(request: DeepPartial<NoteModulationRequest>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(KeyboardControllerSendAftertouchDesc, NoteModulationRequest.fromPartial(request), metadata);
   }
 
-  SendPitchBend(request: DeepPartial<NoteModulationRequest>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  SendPitchBend(request: DeepPartial<NoteModulationRequest>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(KeyboardControllerSendPitchBendDesc, NoteModulationRequest.fromPartial(request), metadata);
   }
 
-  SendModulation(request: DeepPartial<NoteModulationRequest>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  SendModulation(request: DeepPartial<NoteModulationRequest>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(KeyboardControllerSendModulationDesc, NoteModulationRequest.fromPartial(request), metadata);
   }
 }
@@ -11627,7 +9118,7 @@ export const KeyboardControllerSendNoteOnDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -11650,7 +9141,7 @@ export const KeyboardControllerSendNoteOffDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -11673,7 +9164,7 @@ export const KeyboardControllerSendNoteAftertouchDesc: UnaryMethodDefinitionish 
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -11696,7 +9187,7 @@ export const KeyboardControllerSendAftertouchDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -11719,7 +9210,7 @@ export const KeyboardControllerSendPitchBendDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -11742,7 +9233,7 @@ export const KeyboardControllerSendModulationDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -11756,44 +9247,41 @@ export const KeyboardControllerSendModulationDesc: UnaryMethodDefinitionish = {
 export interface AudioGraphController {
   GetAllProcessors(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<ProcessorInfoList>;
   GetAllTracks(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<TrackInfoList>;
-  GetTrackId(request: DeepPartial<GenericStringValue>, metadata?: grpc.Metadata): Promise<TrackIdentifierResponse>;
-  GetTrackInfo(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<TrackInfoResponse>;
-  GetTrackProcessors(
-    request: DeepPartial<TrackIdentifier>,
-    metadata?: grpc.Metadata,
-  ): Promise<ProcessorInfoListResponse>;
-  GetProcessorId(
-    request: DeepPartial<GenericStringValue>,
-    metadata?: grpc.Metadata,
-  ): Promise<ProcessorIdentifierResponse>;
-  GetProcessorInfo(request: DeepPartial<ProcessorIdentifier>, metadata?: grpc.Metadata): Promise<ProcessorInfoResponse>;
-  GetProcessorBypassState(request: DeepPartial<ProcessorIdentifier>, metadata?: grpc.Metadata): Promise<BoolResponse>;
-  GetProcessorState(
+  GetTrackId(request: DeepPartial<GenericStringValue>, metadata?: grpc.Metadata): Promise<TrackIdentifier>;
+  GetTrackInfo(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<TrackInfo>;
+  GetTrackProcessors(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<ProcessorInfoList>;
+  GetProcessorId(request: DeepPartial<GenericStringValue>, metadata?: grpc.Metadata): Promise<ProcessorIdentifier>;
+  GetProcessorInfo(request: DeepPartial<ProcessorIdentifier>, metadata?: grpc.Metadata): Promise<ProcessorInfo>;
+  GetProcessorBypassState(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<ProcessorStateResponse>;
+  ): Promise<GenericBoolValue>;
+  GetProcessorState(request: DeepPartial<ProcessorIdentifier>, metadata?: grpc.Metadata): Promise<ProcessorState>;
   SetProcessorBypassState(
     request: DeepPartial<ProcessorBypassStateSetRequest>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse>;
-  SetProcessorState(request: DeepPartial<ProcessorStateSetRequest>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  CreateTrack(request: DeepPartial<CreateTrackRequest>, metadata?: grpc.Metadata): Promise<CommandResponse>;
+  ): Promise<GenericVoidValue>;
+  SetProcessorState(
+    request: DeepPartial<ProcessorStateSetRequest>,
+    metadata?: grpc.Metadata,
+  ): Promise<GenericVoidValue>;
+  CreateTrack(request: DeepPartial<CreateTrackRequest>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
   CreateMultibusTrack(
     request: DeepPartial<CreateMultibusTrackRequest>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse>;
-  CreatePreTrack(request: DeepPartial<CreatePreTrackRequest>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  CreatePostTrack(request: DeepPartial<CreatePostTrackRequest>, metadata?: grpc.Metadata): Promise<CommandResponse>;
+  ): Promise<GenericVoidValue>;
+  CreatePreTrack(request: DeepPartial<CreatePreTrackRequest>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  CreatePostTrack(request: DeepPartial<CreatePostTrackRequest>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
   CreateProcessorOnTrack(
     request: DeepPartial<CreateProcessorRequest>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse>;
-  MoveProcessorOnTrack(request: DeepPartial<MoveProcessorRequest>, metadata?: grpc.Metadata): Promise<CommandResponse>;
+  ): Promise<GenericVoidValue>;
+  MoveProcessorOnTrack(request: DeepPartial<MoveProcessorRequest>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
   DeleteProcessorFromTrack(
     request: DeepPartial<DeleteProcessorRequest>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse>;
-  DeleteTrack(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<CommandResponse>;
+  ): Promise<GenericVoidValue>;
+  DeleteTrack(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
 }
 
 export class AudioGraphControllerClientImpl implements AudioGraphController {
@@ -11830,36 +9318,30 @@ export class AudioGraphControllerClientImpl implements AudioGraphController {
     return this.rpc.unary(AudioGraphControllerGetAllTracksDesc, GenericVoidValue.fromPartial(request), metadata);
   }
 
-  GetTrackId(request: DeepPartial<GenericStringValue>, metadata?: grpc.Metadata): Promise<TrackIdentifierResponse> {
+  GetTrackId(request: DeepPartial<GenericStringValue>, metadata?: grpc.Metadata): Promise<TrackIdentifier> {
     return this.rpc.unary(AudioGraphControllerGetTrackIdDesc, GenericStringValue.fromPartial(request), metadata);
   }
 
-  GetTrackInfo(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<TrackInfoResponse> {
+  GetTrackInfo(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<TrackInfo> {
     return this.rpc.unary(AudioGraphControllerGetTrackInfoDesc, TrackIdentifier.fromPartial(request), metadata);
   }
 
-  GetTrackProcessors(
-    request: DeepPartial<TrackIdentifier>,
-    metadata?: grpc.Metadata,
-  ): Promise<ProcessorInfoListResponse> {
+  GetTrackProcessors(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<ProcessorInfoList> {
     return this.rpc.unary(AudioGraphControllerGetTrackProcessorsDesc, TrackIdentifier.fromPartial(request), metadata);
   }
 
-  GetProcessorId(
-    request: DeepPartial<GenericStringValue>,
-    metadata?: grpc.Metadata,
-  ): Promise<ProcessorIdentifierResponse> {
+  GetProcessorId(request: DeepPartial<GenericStringValue>, metadata?: grpc.Metadata): Promise<ProcessorIdentifier> {
     return this.rpc.unary(AudioGraphControllerGetProcessorIdDesc, GenericStringValue.fromPartial(request), metadata);
   }
 
-  GetProcessorInfo(
-    request: DeepPartial<ProcessorIdentifier>,
-    metadata?: grpc.Metadata,
-  ): Promise<ProcessorInfoResponse> {
+  GetProcessorInfo(request: DeepPartial<ProcessorIdentifier>, metadata?: grpc.Metadata): Promise<ProcessorInfo> {
     return this.rpc.unary(AudioGraphControllerGetProcessorInfoDesc, ProcessorIdentifier.fromPartial(request), metadata);
   }
 
-  GetProcessorBypassState(request: DeepPartial<ProcessorIdentifier>, metadata?: grpc.Metadata): Promise<BoolResponse> {
+  GetProcessorBypassState(
+    request: DeepPartial<ProcessorIdentifier>,
+    metadata?: grpc.Metadata,
+  ): Promise<GenericBoolValue> {
     return this.rpc.unary(
       AudioGraphControllerGetProcessorBypassStateDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -11867,10 +9349,7 @@ export class AudioGraphControllerClientImpl implements AudioGraphController {
     );
   }
 
-  GetProcessorState(
-    request: DeepPartial<ProcessorIdentifier>,
-    metadata?: grpc.Metadata,
-  ): Promise<ProcessorStateResponse> {
+  GetProcessorState(request: DeepPartial<ProcessorIdentifier>, metadata?: grpc.Metadata): Promise<ProcessorState> {
     return this.rpc.unary(
       AudioGraphControllerGetProcessorStateDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -11881,7 +9360,7 @@ export class AudioGraphControllerClientImpl implements AudioGraphController {
   SetProcessorBypassState(
     request: DeepPartial<ProcessorBypassStateSetRequest>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       AudioGraphControllerSetProcessorBypassStateDesc,
       ProcessorBypassStateSetRequest.fromPartial(request),
@@ -11892,7 +9371,7 @@ export class AudioGraphControllerClientImpl implements AudioGraphController {
   SetProcessorState(
     request: DeepPartial<ProcessorStateSetRequest>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       AudioGraphControllerSetProcessorStateDesc,
       ProcessorStateSetRequest.fromPartial(request),
@@ -11900,14 +9379,14 @@ export class AudioGraphControllerClientImpl implements AudioGraphController {
     );
   }
 
-  CreateTrack(request: DeepPartial<CreateTrackRequest>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  CreateTrack(request: DeepPartial<CreateTrackRequest>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(AudioGraphControllerCreateTrackDesc, CreateTrackRequest.fromPartial(request), metadata);
   }
 
   CreateMultibusTrack(
     request: DeepPartial<CreateMultibusTrackRequest>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       AudioGraphControllerCreateMultibusTrackDesc,
       CreateMultibusTrackRequest.fromPartial(request),
@@ -11915,11 +9394,11 @@ export class AudioGraphControllerClientImpl implements AudioGraphController {
     );
   }
 
-  CreatePreTrack(request: DeepPartial<CreatePreTrackRequest>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  CreatePreTrack(request: DeepPartial<CreatePreTrackRequest>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(AudioGraphControllerCreatePreTrackDesc, CreatePreTrackRequest.fromPartial(request), metadata);
   }
 
-  CreatePostTrack(request: DeepPartial<CreatePostTrackRequest>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  CreatePostTrack(request: DeepPartial<CreatePostTrackRequest>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(
       AudioGraphControllerCreatePostTrackDesc,
       CreatePostTrackRequest.fromPartial(request),
@@ -11930,7 +9409,7 @@ export class AudioGraphControllerClientImpl implements AudioGraphController {
   CreateProcessorOnTrack(
     request: DeepPartial<CreateProcessorRequest>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       AudioGraphControllerCreateProcessorOnTrackDesc,
       CreateProcessorRequest.fromPartial(request),
@@ -11938,7 +9417,10 @@ export class AudioGraphControllerClientImpl implements AudioGraphController {
     );
   }
 
-  MoveProcessorOnTrack(request: DeepPartial<MoveProcessorRequest>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  MoveProcessorOnTrack(
+    request: DeepPartial<MoveProcessorRequest>,
+    metadata?: grpc.Metadata,
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       AudioGraphControllerMoveProcessorOnTrackDesc,
       MoveProcessorRequest.fromPartial(request),
@@ -11949,7 +9431,7 @@ export class AudioGraphControllerClientImpl implements AudioGraphController {
   DeleteProcessorFromTrack(
     request: DeepPartial<DeleteProcessorRequest>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       AudioGraphControllerDeleteProcessorFromTrackDesc,
       DeleteProcessorRequest.fromPartial(request),
@@ -11957,7 +9439,7 @@ export class AudioGraphControllerClientImpl implements AudioGraphController {
     );
   }
 
-  DeleteTrack(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  DeleteTrack(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(AudioGraphControllerDeleteTrackDesc, TrackIdentifier.fromPartial(request), metadata);
   }
 }
@@ -12022,7 +9504,7 @@ export const AudioGraphControllerGetTrackIdDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = TrackIdentifierResponse.decode(data);
+      const value = TrackIdentifier.decode(data);
       return {
         ...value,
         toObject() {
@@ -12045,7 +9527,7 @@ export const AudioGraphControllerGetTrackInfoDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = TrackInfoResponse.decode(data);
+      const value = TrackInfo.decode(data);
       return {
         ...value,
         toObject() {
@@ -12068,7 +9550,7 @@ export const AudioGraphControllerGetTrackProcessorsDesc: UnaryMethodDefinitionis
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = ProcessorInfoListResponse.decode(data);
+      const value = ProcessorInfoList.decode(data);
       return {
         ...value,
         toObject() {
@@ -12091,7 +9573,7 @@ export const AudioGraphControllerGetProcessorIdDesc: UnaryMethodDefinitionish = 
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = ProcessorIdentifierResponse.decode(data);
+      const value = ProcessorIdentifier.decode(data);
       return {
         ...value,
         toObject() {
@@ -12114,7 +9596,7 @@ export const AudioGraphControllerGetProcessorInfoDesc: UnaryMethodDefinitionish 
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = ProcessorInfoResponse.decode(data);
+      const value = ProcessorInfo.decode(data);
       return {
         ...value,
         toObject() {
@@ -12137,7 +9619,7 @@ export const AudioGraphControllerGetProcessorBypassStateDesc: UnaryMethodDefinit
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = BoolResponse.decode(data);
+      const value = GenericBoolValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -12160,7 +9642,7 @@ export const AudioGraphControllerGetProcessorStateDesc: UnaryMethodDefinitionish
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = ProcessorStateResponse.decode(data);
+      const value = ProcessorState.decode(data);
       return {
         ...value,
         toObject() {
@@ -12183,7 +9665,7 @@ export const AudioGraphControllerSetProcessorBypassStateDesc: UnaryMethodDefinit
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -12206,7 +9688,7 @@ export const AudioGraphControllerSetProcessorStateDesc: UnaryMethodDefinitionish
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -12229,7 +9711,7 @@ export const AudioGraphControllerCreateTrackDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -12252,7 +9734,7 @@ export const AudioGraphControllerCreateMultibusTrackDesc: UnaryMethodDefinitioni
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -12275,7 +9757,7 @@ export const AudioGraphControllerCreatePreTrackDesc: UnaryMethodDefinitionish = 
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -12298,7 +9780,7 @@ export const AudioGraphControllerCreatePostTrackDesc: UnaryMethodDefinitionish =
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -12321,7 +9803,7 @@ export const AudioGraphControllerCreateProcessorOnTrackDesc: UnaryMethodDefiniti
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -12344,7 +9826,7 @@ export const AudioGraphControllerMoveProcessorOnTrackDesc: UnaryMethodDefinition
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -12367,7 +9849,7 @@ export const AudioGraphControllerDeleteProcessorFromTrackDesc: UnaryMethodDefini
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -12390,7 +9872,7 @@ export const AudioGraphControllerDeleteTrackDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -12405,23 +9887,20 @@ export interface ProgramController {
   GetProcessorCurrentProgram(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<ProgramIdentifierResponse>;
+  ): Promise<ProgramIdentifier>;
   GetProcessorCurrentProgramName(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<StringResponse>;
+  ): Promise<GenericStringValue>;
   GetProcessorProgramName(
     request: DeepPartial<ProcessorProgramIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<StringResponse>;
-  GetProcessorPrograms(
-    request: DeepPartial<ProcessorIdentifier>,
-    metadata?: grpc.Metadata,
-  ): Promise<ProgramInfoListResponse>;
+  ): Promise<GenericStringValue>;
+  GetProcessorPrograms(request: DeepPartial<ProcessorIdentifier>, metadata?: grpc.Metadata): Promise<ProgramInfoList>;
   SetProcessorProgram(
     request: DeepPartial<ProcessorProgramSetRequest>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse>;
+  ): Promise<GenericVoidValue>;
 }
 
 export class ProgramControllerClientImpl implements ProgramController {
@@ -12439,7 +9918,7 @@ export class ProgramControllerClientImpl implements ProgramController {
   GetProcessorCurrentProgram(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<ProgramIdentifierResponse> {
+  ): Promise<ProgramIdentifier> {
     return this.rpc.unary(
       ProgramControllerGetProcessorCurrentProgramDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -12450,7 +9929,7 @@ export class ProgramControllerClientImpl implements ProgramController {
   GetProcessorCurrentProgramName(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<StringResponse> {
+  ): Promise<GenericStringValue> {
     return this.rpc.unary(
       ProgramControllerGetProcessorCurrentProgramNameDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -12461,7 +9940,7 @@ export class ProgramControllerClientImpl implements ProgramController {
   GetProcessorProgramName(
     request: DeepPartial<ProcessorProgramIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<StringResponse> {
+  ): Promise<GenericStringValue> {
     return this.rpc.unary(
       ProgramControllerGetProcessorProgramNameDesc,
       ProcessorProgramIdentifier.fromPartial(request),
@@ -12469,10 +9948,7 @@ export class ProgramControllerClientImpl implements ProgramController {
     );
   }
 
-  GetProcessorPrograms(
-    request: DeepPartial<ProcessorIdentifier>,
-    metadata?: grpc.Metadata,
-  ): Promise<ProgramInfoListResponse> {
+  GetProcessorPrograms(request: DeepPartial<ProcessorIdentifier>, metadata?: grpc.Metadata): Promise<ProgramInfoList> {
     return this.rpc.unary(
       ProgramControllerGetProcessorProgramsDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -12483,7 +9959,7 @@ export class ProgramControllerClientImpl implements ProgramController {
   SetProcessorProgram(
     request: DeepPartial<ProcessorProgramSetRequest>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       ProgramControllerSetProcessorProgramDesc,
       ProcessorProgramSetRequest.fromPartial(request),
@@ -12506,7 +9982,7 @@ export const ProgramControllerGetProcessorCurrentProgramDesc: UnaryMethodDefinit
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = ProgramIdentifierResponse.decode(data);
+      const value = ProgramIdentifier.decode(data);
       return {
         ...value,
         toObject() {
@@ -12529,7 +10005,7 @@ export const ProgramControllerGetProcessorCurrentProgramNameDesc: UnaryMethodDef
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = StringResponse.decode(data);
+      const value = GenericStringValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -12552,7 +10028,7 @@ export const ProgramControllerGetProcessorProgramNameDesc: UnaryMethodDefinition
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = StringResponse.decode(data);
+      const value = GenericStringValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -12575,7 +10051,7 @@ export const ProgramControllerGetProcessorProgramsDesc: UnaryMethodDefinitionish
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = ProgramInfoListResponse.decode(data);
+      const value = ProgramInfoList.decode(data);
       return {
         ...value,
         toObject() {
@@ -12598,7 +10074,7 @@ export const ProgramControllerSetProcessorProgramDesc: UnaryMethodDefinitionish 
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -12610,41 +10086,32 @@ export const ProgramControllerSetProcessorProgramDesc: UnaryMethodDefinitionish 
 };
 
 export interface ParameterController {
-  GetTrackParameters(
-    request: DeepPartial<TrackIdentifier>,
-    metadata?: grpc.Metadata,
-  ): Promise<ParameterInfoListResponse>;
+  GetTrackParameters(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<ParameterInfoList>;
   GetProcessorParameters(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<ParameterInfoListResponse>;
-  GetParameterId(
-    request: DeepPartial<ParameterIdRequest>,
-    metadata?: grpc.Metadata,
-  ): Promise<ParameterIdentifierResponse>;
-  GetParameterInfo(request: DeepPartial<ParameterIdentifier>, metadata?: grpc.Metadata): Promise<ParameterInfoResponse>;
-  GetParameterValue(request: DeepPartial<ParameterIdentifier>, metadata?: grpc.Metadata): Promise<FloatResponse>;
+  ): Promise<ParameterInfoList>;
+  GetParameterId(request: DeepPartial<ParameterIdRequest>, metadata?: grpc.Metadata): Promise<ParameterIdentifier>;
+  GetParameterInfo(request: DeepPartial<ParameterIdentifier>, metadata?: grpc.Metadata): Promise<ParameterInfo>;
+  GetParameterValue(request: DeepPartial<ParameterIdentifier>, metadata?: grpc.Metadata): Promise<GenericFloatValue>;
   GetParameterValueInDomain(
     request: DeepPartial<ParameterIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<FloatResponse>;
+  ): Promise<GenericFloatValue>;
   GetParameterValueAsString(
     request: DeepPartial<ParameterIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<StringResponse>;
-  SetParameterValue(request: DeepPartial<ParameterValue>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  GetTrackProperties(
-    request: DeepPartial<TrackIdentifier>,
-    metadata?: grpc.Metadata,
-  ): Promise<PropertyInfoListResponse>;
+  ): Promise<GenericStringValue>;
+  SetParameterValue(request: DeepPartial<ParameterValue>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  GetTrackProperties(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<PropertyInfoList>;
   GetProcessorProperties(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<PropertyInfoListResponse>;
-  GetPropertyId(request: DeepPartial<PropertyIdRequest>, metadata?: grpc.Metadata): Promise<PropertyIdentifierResponse>;
-  GetPropertyInfo(request: DeepPartial<PropertyIdentifier>, metadata?: grpc.Metadata): Promise<PropertyInfoResponse>;
-  GetPropertyValue(request: DeepPartial<PropertyIdentifier>, metadata?: grpc.Metadata): Promise<StringResponse>;
-  SetPropertyValue(request: DeepPartial<PropertyValue>, metadata?: grpc.Metadata): Promise<CommandResponse>;
+  ): Promise<PropertyInfoList>;
+  GetPropertyId(request: DeepPartial<PropertyIdRequest>, metadata?: grpc.Metadata): Promise<PropertyIdentifier>;
+  GetPropertyInfo(request: DeepPartial<PropertyIdentifier>, metadata?: grpc.Metadata): Promise<PropertyInfo>;
+  GetPropertyValue(request: DeepPartial<PropertyIdentifier>, metadata?: grpc.Metadata): Promise<GenericStringValue>;
+  SetPropertyValue(request: DeepPartial<PropertyValue>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
 }
 
 export class ParameterControllerClientImpl implements ParameterController {
@@ -12668,17 +10135,14 @@ export class ParameterControllerClientImpl implements ParameterController {
     this.SetPropertyValue = this.SetPropertyValue.bind(this);
   }
 
-  GetTrackParameters(
-    request: DeepPartial<TrackIdentifier>,
-    metadata?: grpc.Metadata,
-  ): Promise<ParameterInfoListResponse> {
+  GetTrackParameters(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<ParameterInfoList> {
     return this.rpc.unary(ParameterControllerGetTrackParametersDesc, TrackIdentifier.fromPartial(request), metadata);
   }
 
   GetProcessorParameters(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<ParameterInfoListResponse> {
+  ): Promise<ParameterInfoList> {
     return this.rpc.unary(
       ParameterControllerGetProcessorParametersDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -12686,28 +10150,22 @@ export class ParameterControllerClientImpl implements ParameterController {
     );
   }
 
-  GetParameterId(
-    request: DeepPartial<ParameterIdRequest>,
-    metadata?: grpc.Metadata,
-  ): Promise<ParameterIdentifierResponse> {
+  GetParameterId(request: DeepPartial<ParameterIdRequest>, metadata?: grpc.Metadata): Promise<ParameterIdentifier> {
     return this.rpc.unary(ParameterControllerGetParameterIdDesc, ParameterIdRequest.fromPartial(request), metadata);
   }
 
-  GetParameterInfo(
-    request: DeepPartial<ParameterIdentifier>,
-    metadata?: grpc.Metadata,
-  ): Promise<ParameterInfoResponse> {
+  GetParameterInfo(request: DeepPartial<ParameterIdentifier>, metadata?: grpc.Metadata): Promise<ParameterInfo> {
     return this.rpc.unary(ParameterControllerGetParameterInfoDesc, ParameterIdentifier.fromPartial(request), metadata);
   }
 
-  GetParameterValue(request: DeepPartial<ParameterIdentifier>, metadata?: grpc.Metadata): Promise<FloatResponse> {
+  GetParameterValue(request: DeepPartial<ParameterIdentifier>, metadata?: grpc.Metadata): Promise<GenericFloatValue> {
     return this.rpc.unary(ParameterControllerGetParameterValueDesc, ParameterIdentifier.fromPartial(request), metadata);
   }
 
   GetParameterValueInDomain(
     request: DeepPartial<ParameterIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<FloatResponse> {
+  ): Promise<GenericFloatValue> {
     return this.rpc.unary(
       ParameterControllerGetParameterValueInDomainDesc,
       ParameterIdentifier.fromPartial(request),
@@ -12718,7 +10176,7 @@ export class ParameterControllerClientImpl implements ParameterController {
   GetParameterValueAsString(
     request: DeepPartial<ParameterIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<StringResponse> {
+  ): Promise<GenericStringValue> {
     return this.rpc.unary(
       ParameterControllerGetParameterValueAsStringDesc,
       ParameterIdentifier.fromPartial(request),
@@ -12726,21 +10184,18 @@ export class ParameterControllerClientImpl implements ParameterController {
     );
   }
 
-  SetParameterValue(request: DeepPartial<ParameterValue>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  SetParameterValue(request: DeepPartial<ParameterValue>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(ParameterControllerSetParameterValueDesc, ParameterValue.fromPartial(request), metadata);
   }
 
-  GetTrackProperties(
-    request: DeepPartial<TrackIdentifier>,
-    metadata?: grpc.Metadata,
-  ): Promise<PropertyInfoListResponse> {
+  GetTrackProperties(request: DeepPartial<TrackIdentifier>, metadata?: grpc.Metadata): Promise<PropertyInfoList> {
     return this.rpc.unary(ParameterControllerGetTrackPropertiesDesc, TrackIdentifier.fromPartial(request), metadata);
   }
 
   GetProcessorProperties(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<PropertyInfoListResponse> {
+  ): Promise<PropertyInfoList> {
     return this.rpc.unary(
       ParameterControllerGetProcessorPropertiesDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -12748,22 +10203,19 @@ export class ParameterControllerClientImpl implements ParameterController {
     );
   }
 
-  GetPropertyId(
-    request: DeepPartial<PropertyIdRequest>,
-    metadata?: grpc.Metadata,
-  ): Promise<PropertyIdentifierResponse> {
+  GetPropertyId(request: DeepPartial<PropertyIdRequest>, metadata?: grpc.Metadata): Promise<PropertyIdentifier> {
     return this.rpc.unary(ParameterControllerGetPropertyIdDesc, PropertyIdRequest.fromPartial(request), metadata);
   }
 
-  GetPropertyInfo(request: DeepPartial<PropertyIdentifier>, metadata?: grpc.Metadata): Promise<PropertyInfoResponse> {
+  GetPropertyInfo(request: DeepPartial<PropertyIdentifier>, metadata?: grpc.Metadata): Promise<PropertyInfo> {
     return this.rpc.unary(ParameterControllerGetPropertyInfoDesc, PropertyIdentifier.fromPartial(request), metadata);
   }
 
-  GetPropertyValue(request: DeepPartial<PropertyIdentifier>, metadata?: grpc.Metadata): Promise<StringResponse> {
+  GetPropertyValue(request: DeepPartial<PropertyIdentifier>, metadata?: grpc.Metadata): Promise<GenericStringValue> {
     return this.rpc.unary(ParameterControllerGetPropertyValueDesc, PropertyIdentifier.fromPartial(request), metadata);
   }
 
-  SetPropertyValue(request: DeepPartial<PropertyValue>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  SetPropertyValue(request: DeepPartial<PropertyValue>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(ParameterControllerSetPropertyValueDesc, PropertyValue.fromPartial(request), metadata);
   }
 }
@@ -12782,7 +10234,7 @@ export const ParameterControllerGetTrackParametersDesc: UnaryMethodDefinitionish
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = ParameterInfoListResponse.decode(data);
+      const value = ParameterInfoList.decode(data);
       return {
         ...value,
         toObject() {
@@ -12805,7 +10257,7 @@ export const ParameterControllerGetProcessorParametersDesc: UnaryMethodDefinitio
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = ParameterInfoListResponse.decode(data);
+      const value = ParameterInfoList.decode(data);
       return {
         ...value,
         toObject() {
@@ -12828,7 +10280,7 @@ export const ParameterControllerGetParameterIdDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = ParameterIdentifierResponse.decode(data);
+      const value = ParameterIdentifier.decode(data);
       return {
         ...value,
         toObject() {
@@ -12851,7 +10303,7 @@ export const ParameterControllerGetParameterInfoDesc: UnaryMethodDefinitionish =
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = ParameterInfoResponse.decode(data);
+      const value = ParameterInfo.decode(data);
       return {
         ...value,
         toObject() {
@@ -12874,7 +10326,7 @@ export const ParameterControllerGetParameterValueDesc: UnaryMethodDefinitionish 
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = FloatResponse.decode(data);
+      const value = GenericFloatValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -12897,7 +10349,7 @@ export const ParameterControllerGetParameterValueInDomainDesc: UnaryMethodDefini
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = FloatResponse.decode(data);
+      const value = GenericFloatValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -12920,7 +10372,7 @@ export const ParameterControllerGetParameterValueAsStringDesc: UnaryMethodDefini
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = StringResponse.decode(data);
+      const value = GenericStringValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -12943,7 +10395,7 @@ export const ParameterControllerSetParameterValueDesc: UnaryMethodDefinitionish 
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -12966,7 +10418,7 @@ export const ParameterControllerGetTrackPropertiesDesc: UnaryMethodDefinitionish
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = PropertyInfoListResponse.decode(data);
+      const value = PropertyInfoList.decode(data);
       return {
         ...value,
         toObject() {
@@ -12989,7 +10441,7 @@ export const ParameterControllerGetProcessorPropertiesDesc: UnaryMethodDefinitio
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = PropertyInfoListResponse.decode(data);
+      const value = PropertyInfoList.decode(data);
       return {
         ...value,
         toObject() {
@@ -13012,7 +10464,7 @@ export const ParameterControllerGetPropertyIdDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = PropertyIdentifierResponse.decode(data);
+      const value = PropertyIdentifier.decode(data);
       return {
         ...value,
         toObject() {
@@ -13035,7 +10487,7 @@ export const ParameterControllerGetPropertyInfoDesc: UnaryMethodDefinitionish = 
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = PropertyInfoResponse.decode(data);
+      const value = PropertyInfo.decode(data);
       return {
         ...value,
         toObject() {
@@ -13058,7 +10510,7 @@ export const ParameterControllerGetPropertyValueDesc: UnaryMethodDefinitionish =
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = StringResponse.decode(data);
+      const value = GenericStringValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -13081,7 +10533,7 @@ export const ParameterControllerSetPropertyValueDesc: UnaryMethodDefinitionish =
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -13114,35 +10566,35 @@ export interface MidiController {
   GetCCInputConnectionsForProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<MidiCCConnectionListResponse>;
+  ): Promise<MidiCCConnectionList>;
   GetPCInputConnectionsForProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<MidiPCConnectionListResponse>;
+  ): Promise<MidiPCConnectionList>;
   GetMidiClockOutputEnabled(request: DeepPartial<GenericIntValue>, metadata?: grpc.Metadata): Promise<GenericBoolValue>;
   SetMidiClockOutputEnabled(
     request: DeepPartial<MidiClockSetRequest>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse>;
-  ConnectKbdInputToTrack(request: DeepPartial<MidiKbdConnection>, metadata?: grpc.Metadata): Promise<CommandResponse>;
+  ): Promise<GenericVoidValue>;
+  ConnectKbdInputToTrack(request: DeepPartial<MidiKbdConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
   ConnectKbdOutputFromTrack(
     request: DeepPartial<MidiKbdConnection>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse>;
-  ConnectCCToParameter(request: DeepPartial<MidiCCConnection>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  ConnectPCToProcessor(request: DeepPartial<MidiPCConnection>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  DisconnectKbdInput(request: DeepPartial<MidiKbdConnection>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  DisconnectKbdOutput(request: DeepPartial<MidiKbdConnection>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  DisconnectCC(request: DeepPartial<MidiCCConnection>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  DisconnectPC(request: DeepPartial<MidiPCConnection>, metadata?: grpc.Metadata): Promise<CommandResponse>;
+  ): Promise<GenericVoidValue>;
+  ConnectCCToParameter(request: DeepPartial<MidiCCConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  ConnectPCToProcessor(request: DeepPartial<MidiPCConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  DisconnectKbdInput(request: DeepPartial<MidiKbdConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  DisconnectKbdOutput(request: DeepPartial<MidiKbdConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  DisconnectCC(request: DeepPartial<MidiCCConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  DisconnectPC(request: DeepPartial<MidiPCConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
   DisconnectAllCCFromProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse>;
+  ): Promise<GenericVoidValue>;
   DisconnectAllPCFromProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse>;
+  ): Promise<GenericVoidValue>;
 }
 
 export class MidiControllerClientImpl implements MidiController {
@@ -13215,7 +10667,7 @@ export class MidiControllerClientImpl implements MidiController {
   GetCCInputConnectionsForProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<MidiCCConnectionListResponse> {
+  ): Promise<MidiCCConnectionList> {
     return this.rpc.unary(
       MidiControllerGetCCInputConnectionsForProcessorDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -13226,7 +10678,7 @@ export class MidiControllerClientImpl implements MidiController {
   GetPCInputConnectionsForProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<MidiPCConnectionListResponse> {
+  ): Promise<MidiPCConnectionList> {
     return this.rpc.unary(
       MidiControllerGetPCInputConnectionsForProcessorDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -13244,7 +10696,7 @@ export class MidiControllerClientImpl implements MidiController {
   SetMidiClockOutputEnabled(
     request: DeepPartial<MidiClockSetRequest>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       MidiControllerSetMidiClockOutputEnabledDesc,
       MidiClockSetRequest.fromPartial(request),
@@ -13252,14 +10704,14 @@ export class MidiControllerClientImpl implements MidiController {
     );
   }
 
-  ConnectKbdInputToTrack(request: DeepPartial<MidiKbdConnection>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  ConnectKbdInputToTrack(request: DeepPartial<MidiKbdConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(MidiControllerConnectKbdInputToTrackDesc, MidiKbdConnection.fromPartial(request), metadata);
   }
 
   ConnectKbdOutputFromTrack(
     request: DeepPartial<MidiKbdConnection>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       MidiControllerConnectKbdOutputFromTrackDesc,
       MidiKbdConnection.fromPartial(request),
@@ -13267,34 +10719,34 @@ export class MidiControllerClientImpl implements MidiController {
     );
   }
 
-  ConnectCCToParameter(request: DeepPartial<MidiCCConnection>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  ConnectCCToParameter(request: DeepPartial<MidiCCConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(MidiControllerConnectCCToParameterDesc, MidiCCConnection.fromPartial(request), metadata);
   }
 
-  ConnectPCToProcessor(request: DeepPartial<MidiPCConnection>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  ConnectPCToProcessor(request: DeepPartial<MidiPCConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(MidiControllerConnectPCToProcessorDesc, MidiPCConnection.fromPartial(request), metadata);
   }
 
-  DisconnectKbdInput(request: DeepPartial<MidiKbdConnection>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  DisconnectKbdInput(request: DeepPartial<MidiKbdConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(MidiControllerDisconnectKbdInputDesc, MidiKbdConnection.fromPartial(request), metadata);
   }
 
-  DisconnectKbdOutput(request: DeepPartial<MidiKbdConnection>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  DisconnectKbdOutput(request: DeepPartial<MidiKbdConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(MidiControllerDisconnectKbdOutputDesc, MidiKbdConnection.fromPartial(request), metadata);
   }
 
-  DisconnectCC(request: DeepPartial<MidiCCConnection>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  DisconnectCC(request: DeepPartial<MidiCCConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(MidiControllerDisconnectCCDesc, MidiCCConnection.fromPartial(request), metadata);
   }
 
-  DisconnectPC(request: DeepPartial<MidiPCConnection>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  DisconnectPC(request: DeepPartial<MidiPCConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(MidiControllerDisconnectPCDesc, MidiPCConnection.fromPartial(request), metadata);
   }
 
   DisconnectAllCCFromProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       MidiControllerDisconnectAllCCFromProcessorDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -13305,7 +10757,7 @@ export class MidiControllerClientImpl implements MidiController {
   DisconnectAllPCFromProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       MidiControllerDisconnectAllPCFromProcessorDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -13466,7 +10918,7 @@ export const MidiControllerGetCCInputConnectionsForProcessorDesc: UnaryMethodDef
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = MidiCCConnectionListResponse.decode(data);
+      const value = MidiCCConnectionList.decode(data);
       return {
         ...value,
         toObject() {
@@ -13489,7 +10941,7 @@ export const MidiControllerGetPCInputConnectionsForProcessorDesc: UnaryMethodDef
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = MidiPCConnectionListResponse.decode(data);
+      const value = MidiPCConnectionList.decode(data);
       return {
         ...value,
         toObject() {
@@ -13535,7 +10987,7 @@ export const MidiControllerSetMidiClockOutputEnabledDesc: UnaryMethodDefinitioni
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -13558,7 +11010,7 @@ export const MidiControllerConnectKbdInputToTrackDesc: UnaryMethodDefinitionish 
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -13581,7 +11033,7 @@ export const MidiControllerConnectKbdOutputFromTrackDesc: UnaryMethodDefinitioni
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -13604,7 +11056,7 @@ export const MidiControllerConnectCCToParameterDesc: UnaryMethodDefinitionish = 
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -13627,7 +11079,7 @@ export const MidiControllerConnectPCToProcessorDesc: UnaryMethodDefinitionish = 
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -13650,7 +11102,7 @@ export const MidiControllerDisconnectKbdInputDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -13673,7 +11125,7 @@ export const MidiControllerDisconnectKbdOutputDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -13696,7 +11148,7 @@ export const MidiControllerDisconnectCCDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -13719,7 +11171,7 @@ export const MidiControllerDisconnectPCDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -13742,7 +11194,7 @@ export const MidiControllerDisconnectAllCCFromProcessorDesc: UnaryMethodDefiniti
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -13765,7 +11217,7 @@ export const MidiControllerDisconnectAllPCFromProcessorDesc: UnaryMethodDefiniti
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -13788,22 +11240,25 @@ export interface AudioRoutingController {
   GetInputConnectionsForTrack(
     request: DeepPartial<TrackIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<AudioConnectionListResponse>;
+  ): Promise<AudioConnectionList>;
   GetOutputConnectionsForTrack(
     request: DeepPartial<TrackIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<AudioConnectionListResponse>;
-  ConnectInputChannelToTrack(request: DeepPartial<AudioConnection>, metadata?: grpc.Metadata): Promise<CommandResponse>;
+  ): Promise<AudioConnectionList>;
+  ConnectInputChannelToTrack(
+    request: DeepPartial<AudioConnection>,
+    metadata?: grpc.Metadata,
+  ): Promise<GenericVoidValue>;
   ConnectOutputChannelFromTrack(
     request: DeepPartial<AudioConnection>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse>;
-  DisconnectInput(request: DeepPartial<AudioConnection>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  DisconnectOutput(request: DeepPartial<AudioConnection>, metadata?: grpc.Metadata): Promise<CommandResponse>;
+  ): Promise<GenericVoidValue>;
+  DisconnectInput(request: DeepPartial<AudioConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  DisconnectOutput(request: DeepPartial<AudioConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
   DisconnectAllInputsFromTrack(
     request: DeepPartial<TrackIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse>;
+  ): Promise<GenericVoidValue>;
   /** @deprecated */
   DisconnectAllOutputFromTrack(
     request: DeepPartial<TrackIdentifier>,
@@ -13812,7 +11267,7 @@ export interface AudioRoutingController {
   DisconnectAllOutputsFromTrack(
     request: DeepPartial<TrackIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse>;
+  ): Promise<GenericVoidValue>;
 }
 
 export class AudioRoutingControllerClientImpl implements AudioRoutingController {
@@ -13858,7 +11313,7 @@ export class AudioRoutingControllerClientImpl implements AudioRoutingController 
   GetInputConnectionsForTrack(
     request: DeepPartial<TrackIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<AudioConnectionListResponse> {
+  ): Promise<AudioConnectionList> {
     return this.rpc.unary(
       AudioRoutingControllerGetInputConnectionsForTrackDesc,
       TrackIdentifier.fromPartial(request),
@@ -13869,7 +11324,7 @@ export class AudioRoutingControllerClientImpl implements AudioRoutingController 
   GetOutputConnectionsForTrack(
     request: DeepPartial<TrackIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<AudioConnectionListResponse> {
+  ): Promise<AudioConnectionList> {
     return this.rpc.unary(
       AudioRoutingControllerGetOutputConnectionsForTrackDesc,
       TrackIdentifier.fromPartial(request),
@@ -13880,7 +11335,7 @@ export class AudioRoutingControllerClientImpl implements AudioRoutingController 
   ConnectInputChannelToTrack(
     request: DeepPartial<AudioConnection>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       AudioRoutingControllerConnectInputChannelToTrackDesc,
       AudioConnection.fromPartial(request),
@@ -13891,7 +11346,7 @@ export class AudioRoutingControllerClientImpl implements AudioRoutingController 
   ConnectOutputChannelFromTrack(
     request: DeepPartial<AudioConnection>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       AudioRoutingControllerConnectOutputChannelFromTrackDesc,
       AudioConnection.fromPartial(request),
@@ -13899,18 +11354,18 @@ export class AudioRoutingControllerClientImpl implements AudioRoutingController 
     );
   }
 
-  DisconnectInput(request: DeepPartial<AudioConnection>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  DisconnectInput(request: DeepPartial<AudioConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(AudioRoutingControllerDisconnectInputDesc, AudioConnection.fromPartial(request), metadata);
   }
 
-  DisconnectOutput(request: DeepPartial<AudioConnection>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  DisconnectOutput(request: DeepPartial<AudioConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(AudioRoutingControllerDisconnectOutputDesc, AudioConnection.fromPartial(request), metadata);
   }
 
   DisconnectAllInputsFromTrack(
     request: DeepPartial<TrackIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       AudioRoutingControllerDisconnectAllInputsFromTrackDesc,
       TrackIdentifier.fromPartial(request),
@@ -13932,7 +11387,7 @@ export class AudioRoutingControllerClientImpl implements AudioRoutingController 
   DisconnectAllOutputsFromTrack(
     request: DeepPartial<TrackIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       AudioRoutingControllerDisconnectAllOutputsFromTrackDesc,
       TrackIdentifier.fromPartial(request),
@@ -14001,7 +11456,7 @@ export const AudioRoutingControllerGetInputConnectionsForTrackDesc: UnaryMethodD
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = AudioConnectionListResponse.decode(data);
+      const value = AudioConnectionList.decode(data);
       return {
         ...value,
         toObject() {
@@ -14024,7 +11479,7 @@ export const AudioRoutingControllerGetOutputConnectionsForTrackDesc: UnaryMethod
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = AudioConnectionListResponse.decode(data);
+      const value = AudioConnectionList.decode(data);
       return {
         ...value,
         toObject() {
@@ -14047,7 +11502,7 @@ export const AudioRoutingControllerConnectInputChannelToTrackDesc: UnaryMethodDe
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -14070,7 +11525,7 @@ export const AudioRoutingControllerConnectOutputChannelFromTrackDesc: UnaryMetho
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -14093,7 +11548,7 @@ export const AudioRoutingControllerDisconnectInputDesc: UnaryMethodDefinitionish
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -14116,7 +11571,7 @@ export const AudioRoutingControllerDisconnectOutputDesc: UnaryMethodDefinitionis
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -14139,7 +11594,7 @@ export const AudioRoutingControllerDisconnectAllInputsFromTrackDesc: UnaryMethod
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -14185,7 +11640,7 @@ export const AudioRoutingControllerDisconnectAllOutputsFromTrackDesc: UnaryMetho
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -14215,46 +11670,49 @@ export interface CvGateController {
   GetCvInputConnectionsForProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CvConnectionListResponse>;
+  ): Promise<CvConnectionList>;
   GetCvOutputConnectionsForProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CvConnectionListResponse>;
+  ): Promise<CvConnectionList>;
   GetGateInputConnectionsForProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<GateConnectionListResponse>;
+  ): Promise<GateConnectionList>;
   GetGateOutputConnectionsForProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<GateConnectionListResponse>;
-  ConnectCvInputToParameter(request: DeepPartial<CvConnection>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  ConnectCvOutputFromParameter(request: DeepPartial<CvConnection>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  ConnectGateInputToProcessor(request: DeepPartial<GateConnection>, metadata?: grpc.Metadata): Promise<CommandResponse>;
+  ): Promise<GateConnectionList>;
+  ConnectCvInputToParameter(request: DeepPartial<CvConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  ConnectCvOutputFromParameter(request: DeepPartial<CvConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  ConnectGateInputToProcessor(
+    request: DeepPartial<GateConnection>,
+    metadata?: grpc.Metadata,
+  ): Promise<GenericVoidValue>;
   ConnectGateOutputFromProcessor(
     request: DeepPartial<GateConnection>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse>;
-  DisconnectCvInput(request: DeepPartial<CvConnection>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  DisconnectCvOutput(request: DeepPartial<CvConnection>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  DisconnectGateInput(request: DeepPartial<GateConnection>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  DisconnectGateOutput(request: DeepPartial<GateConnection>, metadata?: grpc.Metadata): Promise<CommandResponse>;
+  ): Promise<GenericVoidValue>;
+  DisconnectCvInput(request: DeepPartial<CvConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  DisconnectCvOutput(request: DeepPartial<CvConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  DisconnectGateInput(request: DeepPartial<GateConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  DisconnectGateOutput(request: DeepPartial<GateConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
   DisconnectAllCvInputsFromProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse>;
+  ): Promise<GenericVoidValue>;
   DisconnectAllCvOutputsFromProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse>;
+  ): Promise<GenericVoidValue>;
   DisconnectAllGateInputsFromProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse>;
+  ): Promise<GenericVoidValue>;
   DisconnectAllGateOutputsFromProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse>;
+  ): Promise<GenericVoidValue>;
 }
 
 export class CvGateControllerClientImpl implements CvGateController {
@@ -14341,7 +11799,7 @@ export class CvGateControllerClientImpl implements CvGateController {
   GetCvInputConnectionsForProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CvConnectionListResponse> {
+  ): Promise<CvConnectionList> {
     return this.rpc.unary(
       CvGateControllerGetCvInputConnectionsForProcessorDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -14352,7 +11810,7 @@ export class CvGateControllerClientImpl implements CvGateController {
   GetCvOutputConnectionsForProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CvConnectionListResponse> {
+  ): Promise<CvConnectionList> {
     return this.rpc.unary(
       CvGateControllerGetCvOutputConnectionsForProcessorDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -14363,7 +11821,7 @@ export class CvGateControllerClientImpl implements CvGateController {
   GetGateInputConnectionsForProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<GateConnectionListResponse> {
+  ): Promise<GateConnectionList> {
     return this.rpc.unary(
       CvGateControllerGetGateInputConnectionsForProcessorDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -14374,7 +11832,7 @@ export class CvGateControllerClientImpl implements CvGateController {
   GetGateOutputConnectionsForProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<GateConnectionListResponse> {
+  ): Promise<GateConnectionList> {
     return this.rpc.unary(
       CvGateControllerGetGateOutputConnectionsForProcessorDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -14382,11 +11840,14 @@ export class CvGateControllerClientImpl implements CvGateController {
     );
   }
 
-  ConnectCvInputToParameter(request: DeepPartial<CvConnection>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  ConnectCvInputToParameter(request: DeepPartial<CvConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(CvGateControllerConnectCvInputToParameterDesc, CvConnection.fromPartial(request), metadata);
   }
 
-  ConnectCvOutputFromParameter(request: DeepPartial<CvConnection>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  ConnectCvOutputFromParameter(
+    request: DeepPartial<CvConnection>,
+    metadata?: grpc.Metadata,
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       CvGateControllerConnectCvOutputFromParameterDesc,
       CvConnection.fromPartial(request),
@@ -14397,7 +11858,7 @@ export class CvGateControllerClientImpl implements CvGateController {
   ConnectGateInputToProcessor(
     request: DeepPartial<GateConnection>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       CvGateControllerConnectGateInputToProcessorDesc,
       GateConnection.fromPartial(request),
@@ -14408,7 +11869,7 @@ export class CvGateControllerClientImpl implements CvGateController {
   ConnectGateOutputFromProcessor(
     request: DeepPartial<GateConnection>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       CvGateControllerConnectGateOutputFromProcessorDesc,
       GateConnection.fromPartial(request),
@@ -14416,26 +11877,26 @@ export class CvGateControllerClientImpl implements CvGateController {
     );
   }
 
-  DisconnectCvInput(request: DeepPartial<CvConnection>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  DisconnectCvInput(request: DeepPartial<CvConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(CvGateControllerDisconnectCvInputDesc, CvConnection.fromPartial(request), metadata);
   }
 
-  DisconnectCvOutput(request: DeepPartial<CvConnection>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  DisconnectCvOutput(request: DeepPartial<CvConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(CvGateControllerDisconnectCvOutputDesc, CvConnection.fromPartial(request), metadata);
   }
 
-  DisconnectGateInput(request: DeepPartial<GateConnection>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  DisconnectGateInput(request: DeepPartial<GateConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(CvGateControllerDisconnectGateInputDesc, GateConnection.fromPartial(request), metadata);
   }
 
-  DisconnectGateOutput(request: DeepPartial<GateConnection>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  DisconnectGateOutput(request: DeepPartial<GateConnection>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(CvGateControllerDisconnectGateOutputDesc, GateConnection.fromPartial(request), metadata);
   }
 
   DisconnectAllCvInputsFromProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       CvGateControllerDisconnectAllCvInputsFromProcessorDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -14446,7 +11907,7 @@ export class CvGateControllerClientImpl implements CvGateController {
   DisconnectAllCvOutputsFromProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       CvGateControllerDisconnectAllCvOutputsFromProcessorDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -14457,7 +11918,7 @@ export class CvGateControllerClientImpl implements CvGateController {
   DisconnectAllGateInputsFromProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       CvGateControllerDisconnectAllGateInputsFromProcessorDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -14468,7 +11929,7 @@ export class CvGateControllerClientImpl implements CvGateController {
   DisconnectAllGateOutputsFromProcessor(
     request: DeepPartial<ProcessorIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       CvGateControllerDisconnectAllGateOutputsFromProcessorDesc,
       ProcessorIdentifier.fromPartial(request),
@@ -14629,7 +12090,7 @@ export const CvGateControllerGetCvInputConnectionsForProcessorDesc: UnaryMethodD
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CvConnectionListResponse.decode(data);
+      const value = CvConnectionList.decode(data);
       return {
         ...value,
         toObject() {
@@ -14652,7 +12113,7 @@ export const CvGateControllerGetCvOutputConnectionsForProcessorDesc: UnaryMethod
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CvConnectionListResponse.decode(data);
+      const value = CvConnectionList.decode(data);
       return {
         ...value,
         toObject() {
@@ -14675,7 +12136,7 @@ export const CvGateControllerGetGateInputConnectionsForProcessorDesc: UnaryMetho
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = GateConnectionListResponse.decode(data);
+      const value = GateConnectionList.decode(data);
       return {
         ...value,
         toObject() {
@@ -14698,7 +12159,7 @@ export const CvGateControllerGetGateOutputConnectionsForProcessorDesc: UnaryMeth
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = GateConnectionListResponse.decode(data);
+      const value = GateConnectionList.decode(data);
       return {
         ...value,
         toObject() {
@@ -14721,7 +12182,7 @@ export const CvGateControllerConnectCvInputToParameterDesc: UnaryMethodDefinitio
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -14744,7 +12205,7 @@ export const CvGateControllerConnectCvOutputFromParameterDesc: UnaryMethodDefini
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -14767,7 +12228,7 @@ export const CvGateControllerConnectGateInputToProcessorDesc: UnaryMethodDefinit
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -14790,7 +12251,7 @@ export const CvGateControllerConnectGateOutputFromProcessorDesc: UnaryMethodDefi
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -14813,7 +12274,7 @@ export const CvGateControllerDisconnectCvInputDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -14836,7 +12297,7 @@ export const CvGateControllerDisconnectCvOutputDesc: UnaryMethodDefinitionish = 
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -14859,7 +12320,7 @@ export const CvGateControllerDisconnectGateInputDesc: UnaryMethodDefinitionish =
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -14882,7 +12343,7 @@ export const CvGateControllerDisconnectGateOutputDesc: UnaryMethodDefinitionish 
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -14905,7 +12366,7 @@ export const CvGateControllerDisconnectAllCvInputsFromProcessorDesc: UnaryMethod
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -14928,7 +12389,7 @@ export const CvGateControllerDisconnectAllCvOutputsFromProcessorDesc: UnaryMetho
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -14951,7 +12412,7 @@ export const CvGateControllerDisconnectAllGateInputsFromProcessorDesc: UnaryMeth
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -14974,7 +12435,7 @@ export const CvGateControllerDisconnectAllGateOutputsFromProcessorDesc: UnaryMet
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -14996,13 +12457,13 @@ export interface OscController {
   EnableOutputForParameter(
     request: DeepPartial<ParameterIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse>;
+  ): Promise<GenericVoidValue>;
   DisableOutputForParameter(
     request: DeepPartial<ParameterIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse>;
-  EnableAllOutput(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<CommandResponse>;
-  DisableAllOutput(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<CommandResponse>;
+  ): Promise<GenericVoidValue>;
+  EnableAllOutput(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
+  DisableAllOutput(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
 }
 
 export class OscControllerClientImpl implements OscController {
@@ -15042,7 +12503,7 @@ export class OscControllerClientImpl implements OscController {
   EnableOutputForParameter(
     request: DeepPartial<ParameterIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       OscControllerEnableOutputForParameterDesc,
       ParameterIdentifier.fromPartial(request),
@@ -15053,7 +12514,7 @@ export class OscControllerClientImpl implements OscController {
   DisableOutputForParameter(
     request: DeepPartial<ParameterIdentifier>,
     metadata?: grpc.Metadata,
-  ): Promise<CommandResponse> {
+  ): Promise<GenericVoidValue> {
     return this.rpc.unary(
       OscControllerDisableOutputForParameterDesc,
       ParameterIdentifier.fromPartial(request),
@@ -15061,11 +12522,11 @@ export class OscControllerClientImpl implements OscController {
     );
   }
 
-  EnableAllOutput(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  EnableAllOutput(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(OscControllerEnableAllOutputDesc, GenericVoidValue.fromPartial(request), metadata);
   }
 
-  DisableAllOutput(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  DisableAllOutput(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(OscControllerDisableAllOutputDesc, GenericVoidValue.fromPartial(request), metadata);
   }
 }
@@ -15176,7 +12637,7 @@ export const OscControllerEnableOutputForParameterDesc: UnaryMethodDefinitionish
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -15199,7 +12660,7 @@ export const OscControllerDisableOutputForParameterDesc: UnaryMethodDefinitionis
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -15222,7 +12683,7 @@ export const OscControllerEnableAllOutputDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -15245,7 +12706,7 @@ export const OscControllerDisableAllOutputDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -15258,7 +12719,7 @@ export const OscControllerDisableAllOutputDesc: UnaryMethodDefinitionish = {
 
 export interface SessionController {
   SaveSession(request: DeepPartial<GenericVoidValue>, metadata?: grpc.Metadata): Promise<SessionState>;
-  RestoreSession(request: DeepPartial<SessionState>, metadata?: grpc.Metadata): Promise<CommandResponse>;
+  RestoreSession(request: DeepPartial<SessionState>, metadata?: grpc.Metadata): Promise<GenericVoidValue>;
 }
 
 export class SessionControllerClientImpl implements SessionController {
@@ -15274,7 +12735,7 @@ export class SessionControllerClientImpl implements SessionController {
     return this.rpc.unary(SessionControllerSaveSessionDesc, GenericVoidValue.fromPartial(request), metadata);
   }
 
-  RestoreSession(request: DeepPartial<SessionState>, metadata?: grpc.Metadata): Promise<CommandResponse> {
+  RestoreSession(request: DeepPartial<SessionState>, metadata?: grpc.Metadata): Promise<GenericVoidValue> {
     return this.rpc.unary(SessionControllerRestoreSessionDesc, SessionState.fromPartial(request), metadata);
   }
 }
@@ -15316,7 +12777,7 @@ export const SessionControllerRestoreSessionDesc: UnaryMethodDefinitionish = {
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
-      const value = CommandResponse.decode(data);
+      const value = GenericVoidValue.decode(data);
       return {
         ...value,
         toObject() {
@@ -15349,10 +12810,6 @@ export interface NotificationController {
     request: DeepPartial<PropertyNotificationBlocklist>,
     metadata?: grpc.Metadata,
   ): Observable<PropertyValue>;
-  SubscribeToAsyncCommandUpdates(
-    request: DeepPartial<GenericVoidValue>,
-    metadata?: grpc.Metadata,
-  ): Observable<AsyncCommandResponse>;
 }
 
 export class NotificationControllerClientImpl implements NotificationController {
@@ -15366,7 +12823,6 @@ export class NotificationControllerClientImpl implements NotificationController 
     this.SubscribeToProcessorChanges = this.SubscribeToProcessorChanges.bind(this);
     this.SubscribeToParameterUpdates = this.SubscribeToParameterUpdates.bind(this);
     this.SubscribeToPropertyUpdates = this.SubscribeToPropertyUpdates.bind(this);
-    this.SubscribeToAsyncCommandUpdates = this.SubscribeToAsyncCommandUpdates.bind(this);
   }
 
   SubscribeToTransportChanges(
@@ -15428,17 +12884,6 @@ export class NotificationControllerClientImpl implements NotificationController 
     return this.rpc.invoke(
       NotificationControllerSubscribeToPropertyUpdatesDesc,
       PropertyNotificationBlocklist.fromPartial(request),
-      metadata,
-    );
-  }
-
-  SubscribeToAsyncCommandUpdates(
-    request: DeepPartial<GenericVoidValue>,
-    metadata?: grpc.Metadata,
-  ): Observable<AsyncCommandResponse> {
-    return this.rpc.invoke(
-      NotificationControllerSubscribeToAsyncCommandUpdatesDesc,
-      GenericVoidValue.fromPartial(request),
       metadata,
     );
   }
@@ -15584,29 +13029,6 @@ export const NotificationControllerSubscribeToPropertyUpdatesDesc: UnaryMethodDe
   } as any,
 };
 
-export const NotificationControllerSubscribeToAsyncCommandUpdatesDesc: UnaryMethodDefinitionish = {
-  methodName: "SubscribeToAsyncCommandUpdates",
-  service: NotificationControllerDesc,
-  requestStream: false,
-  responseStream: true,
-  requestType: {
-    serializeBinary() {
-      return GenericVoidValue.encode(this).finish();
-    },
-  } as any,
-  responseType: {
-    deserializeBinary(data: Uint8Array) {
-      const value = AsyncCommandResponse.decode(data);
-      return {
-        ...value,
-        toObject() {
-          return value;
-        },
-      };
-    },
-  } as any,
-};
-
 interface UnaryMethodDefinitionishR extends grpc.UnaryMethodDefinition<any, any> {
   requestStream: any;
   responseStream: any;
@@ -15722,7 +13144,7 @@ export class GrpcWebImpl {
 
 function bytesFromBase64(b64: string): Uint8Array {
   if ((globalThis as any).Buffer) {
-    return Uint8Array.from((globalThis as any).Buffer.from(b64, "base64"));
+    return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
   } else {
     const bin = globalThis.atob(b64);
     const arr = new Uint8Array(bin.length);
@@ -15735,7 +13157,7 @@ function bytesFromBase64(b64: string): Uint8Array {
 
 function base64FromBytes(arr: Uint8Array): string {
   if ((globalThis as any).Buffer) {
-    return (globalThis as any).Buffer.from(arr).toString("base64");
+    return globalThis.Buffer.from(arr).toString("base64");
   } else {
     const bin: string[] = [];
     arr.forEach((byte) => {

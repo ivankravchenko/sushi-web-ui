@@ -45,7 +45,7 @@ function AppContent() {
 
   const handleOpenSettings = () => {
     // Settings dialog will be implemented later
-    console.log('Settings clicked');
+
   };
 
   const handleOpenHelp = () => {

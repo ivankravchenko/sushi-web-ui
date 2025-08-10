@@ -51,7 +51,7 @@ export class SushiGrpcService {
   private transportController: TransportControllerClientImpl;
 
   constructor(baseUrl: string = 'http://localhost:8081') {
-    console.log('Creating SushiGrpcService with baseUrl:', baseUrl);
+
     
     // Create gRPC-Web implementation with WebSocket transport for streaming
     this.rpc = new GrpcWebImpl(baseUrl, {
@@ -69,8 +69,7 @@ export class SushiGrpcService {
   // Test connection to Sushi
   async testConnection(): Promise<boolean> {
     try {
-      const response = await this.systemController.GetSushiVersion({});
-      console.log('Connection test successful, Sushi version:', response.value);
+      await this.systemController.GetSushiVersion({});
       return true;
     } catch (error) {
       console.error('Connection test failed:', error);
@@ -116,11 +115,22 @@ export class SushiGrpcService {
   // Subscribe to CPU timing updates
   subscribeToCpuTimings(callback: (timings: CpuTimings) => void) {
     try {
+
       const stream = this.notificationController.SubscribeToEngineCpuTimingUpdates({});
-      stream.subscribe((timings: CpuTimings) => {
-        callback(timings);
+      
+      const subscription = stream.subscribe({
+        next: (update: CpuTimings) => {
+          callback(update);
+        },
+        error: (error: any) => {
+          console.error('CPU timing stream error:', error);
+        },
+        complete: () => {
+
+        }
       });
-      return stream;
+      
+      return subscription;
     } catch (error) {
       console.error('Failed to subscribe to CPU timings:', error);
       throw error;
@@ -181,7 +191,7 @@ export class SushiGrpcService {
       };
       
       await this.parameterController.SetParameterValue(parameterValue);
-      console.log(`Set parameter ${parameterId} on processor ${processorId} to ${value}`);
+
     } catch (error) {
       console.error(`Failed to set parameter ${parameterId} on processor ${processorId}:`, error);
       throw error;
@@ -208,7 +218,7 @@ export class SushiGrpcService {
   async play(): Promise<void> {
     try {
       await this.transportController.SetPlayingMode({ mode: 2 }); // PLAYING = 2
-      console.log('Started playback');
+
     } catch (error) {
       console.error('Failed to start playback:', error);
       throw error;
@@ -218,7 +228,7 @@ export class SushiGrpcService {
   async stop(): Promise<void> {
     try {
       await this.transportController.SetPlayingMode({ mode: 1 }); // STOPPED = 1
-      console.log('Stopped playback');
+
     } catch (error) {
       console.error('Failed to stop playback:', error);
       throw error;
@@ -237,7 +247,7 @@ export class SushiGrpcService {
 
   // Cleanup method
   disconnect(): void {
-    console.log('Disconnecting from Sushi gRPC service');
+
     // Add any cleanup logic here if needed
   }
 }

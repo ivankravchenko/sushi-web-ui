@@ -38,7 +38,7 @@ export function ConnectionDialog({ open, onClose }: ConnectionDialogProps) {
   const handleConnect = async () => {
     if (!url.trim()) return;
     
-    console.log('ConnectionDialog: Attempting to connect to:', url.trim());
+
     try {
       await connect(url.trim());
     } catch (error) {

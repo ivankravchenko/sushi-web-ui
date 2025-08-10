@@ -109,6 +109,7 @@ const SushiContext = createContext<SushiContextType | null>(null);
 export function SushiProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(sushiReducer, initialState);
   const [grpcService, setGrpcService] = React.useState<SushiGrpcService | null>(null);
+  const [cpuSubscription, setCpuSubscription] = React.useState<{ unsubscribe: () => void } | null>(null);
 
   const connect = useCallback(async (url: string) => {
     dispatch({ type: 'SET_CONNECTING', payload: true });
@@ -147,6 +148,12 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const disconnect = useCallback(() => {
+    // Clean up CPU subscription
+    if (cpuSubscription) {
+      cpuSubscription.unsubscribe();
+      setCpuSubscription(null);
+    }
+    
     if (grpcService) {
       grpcService.disconnect();
     }
@@ -154,7 +161,7 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'SET_CONNECTED', payload: false });
     dispatch({ type: 'SET_TRACKS', payload: [] });
     dispatch({ type: 'SET_ENGINE_INFO', payload: null });
-  }, [grpcService]);
+  }, [grpcService, cpuSubscription]);
 
   const loadRealTracks = async (service: SushiGrpcService) => {
     try {
@@ -216,29 +223,39 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
   }, [state.connected, grpcService]);
 
   const startCpuMonitoring = useCallback((service: SushiGrpcService) => {
+    // Clean up any existing subscription first
+    if (cpuSubscription) {
+      cpuSubscription.unsubscribe();
+    }
+    
     // Subscribe to CPU timing updates via streaming
     try {
-      service.subscribeToCpuTimings((timings) => {
-        // Calculate average CPU load from main and threads
-        const mainLoad = timings.main?.average || 0;
-        const avgThreadLoad = timings.threads.length > 0 
-          ? timings.threads.reduce((sum, thread) => sum + (thread.average || 0), 0) / timings.threads.length
-          : 0;
-        const totalLoad = (mainLoad + avgThreadLoad) / 2;
-        dispatch({ type: 'SET_CPU_LOAD', payload: totalLoad });
+      const subscription = service.subscribeToCpuTimings((update) => {
+        const cpuLoad = update.average || 0;
+        dispatch({ type: 'SET_CPU_LOAD', payload: cpuLoad });
       });
+      
+      setCpuSubscription(subscription);
+        // CPU monitoring subscription cleaned up
+      
     } catch (error) {
       console.error('Failed to subscribe to CPU timings:', error);
-      // Fallback to periodic updates if streaming fails
-      const updateCpuLoad = async () => {
-        dispatch({ type: 'SET_CPU_LOAD', payload: 0.1 }); // Mock value
+      // Fallback to mock updates if streaming fails
+      const updateCpuLoad = () => {
+        const mockLoad = 0.15 + Math.random() * 0.1; // 15-25% mock load
+        dispatch({ type: 'SET_CPU_LOAD', payload: mockLoad });
       };
+      
+      // Initial update
+      updateCpuLoad();
+      
+      // Set up periodic updates
       const intervalId = setInterval(updateCpuLoad, 2000);
-      return intervalId;
+      
+      // Store interval for cleanup
+      setCpuSubscription({ unsubscribe: () => clearInterval(intervalId) });
     }
-
-
-  }, []);
+  }, [cpuSubscription]);
 
   const setParameterValue = useCallback(async (trackId: number, parameterId: number, value: number) => {
     if (!grpcService) return;
@@ -263,7 +280,7 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
         payload: { trackId, parameterId, value }
       });
       
-      console.log(`Successfully set parameter ${parameterId} on processor ${processorId} to ${value}`);
+
     } catch (error) {
       console.error('Failed to set parameter on Sushi backend:', error);
     }

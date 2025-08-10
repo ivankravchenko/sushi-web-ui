@@ -298,15 +298,41 @@ export class SushiGrpcService {
     }
   }
 
-  subscribeToParameterUpdates(): Observable<any> {
-    return this.notificationController.SubscribeToParameterUpdates({});
+  async subscribeToParameterUpdates(): Promise<Observable<any>> {
+    const request = {}; // Empty request for all parameter updates
+    return this.notificationController.SubscribeToParameterUpdates(request);
+  }
+
+  // Track management methods
+  async createTrack(name: string, channels: number): Promise<void> {
+    await this.audioGraphController.CreateTrack({ name, channels });
+  }
+
+  async createMultibusTrack(name: string, buses: number): Promise<void> {
+    await this.audioGraphController.CreateMultibusTrack({ name, buses });
+  }
+
+  async createPreTrack(name: string): Promise<void> {
+    await this.audioGraphController.CreatePreTrack({ name });
+  }
+
+  async createPostTrack(name: string): Promise<void> {
+    await this.audioGraphController.CreatePostTrack({ name });
+  }
+
+  async deleteTrack(trackId: number): Promise<void> {
+    await this.audioGraphController.DeleteTrack({ id: trackId });
+  }
+
+  async subscribeToTrackChanges(): Promise<Observable<any>> {
+    const request = {}; // Empty request for all track changes
+    return this.notificationController.SubscribeToTrackChanges(request);
   }
 
   // Transport controls
   async play(): Promise<void> {
     try {
       await this.transportController.SetPlayingMode({ mode: 2 }); // PLAYING = 2
-
     } catch (error) {
       console.error('Failed to start playback:', error);
       throw error;

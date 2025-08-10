@@ -13,9 +13,10 @@ import type { Track } from '../contexts/SushiContext';
 interface TrackChannelProps {
   track: Track;
   onParameterChange: (trackId: number, parameterId: number, value: number) => void;
+  onDeleteTrack: (trackId: number) => void;
 }
 
-export function TrackChannel({ track, onParameterChange }: TrackChannelProps) {
+export function TrackChannel({ track, onParameterChange, onDeleteTrack }: TrackChannelProps) {
   const getLevelParameter = () => {
     return track.parameters.find(p => 
       p.name.toLowerCase() === 'gain'
@@ -202,6 +203,17 @@ export function TrackChannel({ track, onParameterChange }: TrackChannelProps) {
         >
           {track.name}
         </Typography>
+        
+        {/* Delete Button */}
+        <Button
+          variant="outlined"
+          color="error"
+          size="small"
+          onClick={() => onDeleteTrack(track.id)}
+          sx={{ mt: 1, width: '100%' }}
+        >
+          Delete
+        </Button>
       </Box>
     </Paper>
   );

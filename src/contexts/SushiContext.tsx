@@ -49,7 +49,8 @@ type SushiAction =
   | { type: 'SET_ENGINE_INFO'; payload: SushiState['engineInfo'] }
   | { type: 'SET_TRACKS'; payload: Track[] }
   | { type: 'SET_CPU_LOAD'; payload: number }
-  | { type: 'UPDATE_PARAMETER'; payload: { trackId: number; parameterId: number; value: number } };
+  | { type: 'UPDATE_PARAMETER'; payload: { trackId: number; parameterId: number; value: number } }
+  | { type: 'REMOVE_TRACK'; payload: number };
 
 const initialState: SushiState = {
   connected: false,
@@ -93,6 +94,11 @@ function sushiReducer(state: SushiState, action: SushiAction): SushiState {
             : track
         )
       };
+    case 'REMOVE_TRACK':
+      return {
+        ...state,
+        tracks: state.tracks.filter(track => track.id !== action.payload)
+      };
     default:
       return state;
   }
@@ -104,6 +110,11 @@ interface SushiContextType {
   disconnect: () => void;
   refreshData: () => Promise<void>;
   setParameterValue: (trackId: number, parameterId: number, value: number) => Promise<void>;
+  createTrack: (name: string, channels: number) => Promise<void>;
+  createMultibusTrack: (name: string, buses: number) => Promise<void>;
+  createPreTrack: (name: string) => Promise<void>;
+  createPostTrack: (name: string) => Promise<void>;
+  deleteTrack: (trackId: number) => Promise<void>;
 }
 
 const SushiContext = createContext<SushiContextType | null>(null);
@@ -113,6 +124,7 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
   const [grpcService, setGrpcService] = useState<SushiGrpcService | null>(null);
   const [cpuSubscription, setCpuSubscription] = useState<any>(null);
   const [parameterSubscription, setParameterSubscription] = useState<any>(null);
+  const [trackSubscription, setTrackSubscription] = useState<any>(null);
 
   const connect = useCallback(async (url: string) => {
     dispatch({ type: 'SET_CONNECTING', payload: true });
@@ -145,7 +157,14 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
       startCpuMonitoring(service);
       
       // Start parameter monitoring
-      startParameterMonitoring(service);
+      startParameterMonitoring(service).catch(error => 
+        console.error('Failed to start parameter monitoring:', error)
+      );
+      
+      // Start track monitoring
+      startTrackMonitoring(service).catch(error => 
+        console.error('Failed to start track monitoring:', error)
+      );
       
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: `Connection failed: ${error}` });
@@ -166,6 +185,12 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
       setParameterSubscription(null);
     }
     
+    // Clean up track subscription
+    if (trackSubscription) {
+      trackSubscription.unsubscribe();
+      setTrackSubscription(null);
+    }
+    
     if (grpcService) {
       grpcService.disconnect();
     }
@@ -173,7 +198,7 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'SET_CONNECTED', payload: false });
     dispatch({ type: 'SET_TRACKS', payload: [] });
     dispatch({ type: 'SET_ENGINE_INFO', payload: null });
-  }, [grpcService, cpuSubscription, parameterSubscription]);
+  }, [grpcService, cpuSubscription, parameterSubscription, trackSubscription]);
 
   const loadRealTracks = async (service: SushiGrpcService) => {
     try {
@@ -306,7 +331,7 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
     }
   }, [cpuSubscription]);
 
-  const startParameterMonitoring = useCallback((service: SushiGrpcService) => {
+  const startParameterMonitoring = useCallback(async (service: SushiGrpcService) => {
     // Clean up any existing subscription first
     if (parameterSubscription) {
       parameterSubscription.unsubscribe();
@@ -314,7 +339,8 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
     
     // Subscribe to parameter updates via streaming
     try {
-      const subscription = service.subscribeToParameterUpdates().subscribe({
+      const observable = await service.subscribeToParameterUpdates();
+      const subscription = observable.subscribe({
         next: (update: any) => {
           // Update parameter value in state when we receive updates from Sushi
           if (update.parameter && update.parameter.processorId !== undefined && update.parameter.parameterId !== undefined) {
@@ -343,6 +369,42 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
     }
   }, [parameterSubscription]);
 
+  const startTrackMonitoring = useCallback(async (service: SushiGrpcService) => {
+    // Clean up any existing subscription first
+    if (trackSubscription) {
+      trackSubscription.unsubscribe();
+    }
+    
+    // Subscribe to track changes via streaming
+    try {
+      const observable = await service.subscribeToTrackChanges();
+      const subscription = observable.subscribe({
+        next: (update: any) => {
+          // Handle track updates (TRACK_ADDED, TRACK_DELETED)
+          if (update.action && update.track) {
+            if (update.action === 1) { // TRACK_ADDED
+              // Reload tracks to get the new track
+              loadRealTracks(service);
+            } else if (update.action === 2) { // TRACK_DELETED
+              // Remove track from state
+              dispatch({ 
+                type: 'REMOVE_TRACK', 
+                payload: update.track.id 
+              });
+            }
+          }
+        },
+        error: (error: any) => {
+          console.error('Track subscription error:', error);
+        }
+      });
+      
+      setTrackSubscription(subscription);
+    } catch (error) {
+      console.error('Failed to subscribe to track changes:', error);
+    }
+  }, [trackSubscription]);
+
   const setParameterValue = useCallback(async (trackId: number, parameterId: number, value: number) => {
     if (!grpcService) return;
     
@@ -361,12 +423,63 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
     }
   }, [grpcService]);
 
+  // Track management methods
+  const createTrack = useCallback(async (name: string, channels: number) => {
+    if (!grpcService) return;
+    try {
+      await grpcService.createTrack(name, channels);
+    } catch (error) {
+      console.error('Failed to create track:', error);
+    }
+  }, [grpcService]);
+
+  const createMultibusTrack = useCallback(async (name: string, buses: number) => {
+    if (!grpcService) return;
+    try {
+      await grpcService.createMultibusTrack(name, buses);
+    } catch (error) {
+      console.error('Failed to create multibus track:', error);
+    }
+  }, [grpcService]);
+
+  const createPreTrack = useCallback(async (name: string) => {
+    if (!grpcService) return;
+    try {
+      await grpcService.createPreTrack(name);
+    } catch (error) {
+      console.error('Failed to create pre track:', error);
+    }
+  }, [grpcService]);
+
+  const createPostTrack = useCallback(async (name: string) => {
+    if (!grpcService) return;
+    try {
+      await grpcService.createPostTrack(name);
+    } catch (error) {
+      console.error('Failed to create post track:', error);
+    }
+  }, [grpcService]);
+
+  const deleteTrack = useCallback(async (trackId: number) => {
+    if (!grpcService) return;
+    try {
+      await grpcService.deleteTrack(trackId);
+    } catch (error) {
+      console.error('Failed to delete track:', error);
+    }
+  }, [grpcService]);
+
   const contextValue: SushiContextType = {
     state,
     connect,
     disconnect,
     refreshData,
     setParameterValue,
+    createTrack,
+    createMultibusTrack,
+    createPreTrack,
+    createPostTrack,
+    deleteTrack,
   };
 
   return (

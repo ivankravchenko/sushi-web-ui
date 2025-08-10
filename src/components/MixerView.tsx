@@ -2,13 +2,17 @@ import {
   Box,
   Typography,
   Paper,
-  CircularProgress
+  CircularProgress,
+  Button
 } from '@mui/material';
+import { useState } from 'react';
 import { useSushi } from '../contexts/SushiContext';
 import { TrackChannel } from './TrackChannel';
+import { CreateTrackDialog } from './CreateTrackDialog';
 
 export function MixerView() {
-  const { state, setParameterValue } = useSushi();
+  const { state, setParameterValue, deleteTrack } = useSushi();
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   if (state.connecting) {
     return (
@@ -74,10 +78,39 @@ export function MixerView() {
               key={track.id}
               track={track}
               onParameterChange={setParameterValue}
+              onDeleteTrack={deleteTrack}
             />
           ))}
+          
+          {/* Create Track Button */}
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            minWidth: 120,
+            height: 600
+          }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setCreateDialogOpen(true)}
+              sx={{ 
+                height: 60,
+                minWidth: 100,
+                fontSize: '1.1rem'
+              }}
+            >
+              Create
+            </Button>
+          </Box>
         </Box>
       )}
+      
+      {/* Create Track Dialog */}
+      <CreateTrackDialog
+        open={createDialogOpen}
+        onClose={() => setCreateDialogOpen(false)}
+      />
     </Box>
   );
 }

@@ -50,7 +50,9 @@ type SushiAction =
   | { type: 'SET_TRACKS'; payload: Track[] }
   | { type: 'SET_CPU_LOAD'; payload: number }
   | { type: 'UPDATE_PARAMETER'; payload: { trackId: number; parameterId: number; value: number } }
-  | { type: 'REMOVE_TRACK'; payload: number };
+  | { type: 'REMOVE_TRACK'; payload: number }
+  | { type: 'REMOVE_PROCESSOR'; payload: { trackId: number; processorId: number } }
+  | { type: 'UPDATE_TRACK_PROCESSORS'; payload: { trackId: number; processors: Processor[] } };
 
 const initialState: SushiState = {
   connected: false,
@@ -99,6 +101,30 @@ function sushiReducer(state: SushiState, action: SushiAction): SushiState {
         ...state,
         tracks: state.tracks.filter(track => track.id !== action.payload)
       };
+    case 'REMOVE_PROCESSOR':
+      return {
+        ...state,
+        tracks: state.tracks.map(track =>
+          track.id === action.payload.trackId
+            ? {
+                ...track,
+                processors: track.processors.filter(processor => processor.id !== action.payload.processorId)
+              }
+            : track
+        )
+      };
+    case 'UPDATE_TRACK_PROCESSORS':
+      return {
+        ...state,
+        tracks: state.tracks.map(track =>
+          track.id === action.payload.trackId
+            ? {
+                ...track,
+                processors: action.payload.processors
+              }
+            : track
+        )
+      };
     default:
       return state;
   }
@@ -125,6 +151,7 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
   const [cpuSubscription, setCpuSubscription] = useState<any>(null);
   const [parameterSubscription, setParameterSubscription] = useState<any>(null);
   const [trackSubscription, setTrackSubscription] = useState<any>(null);
+  const [processorSubscription, setProcessorSubscription] = useState<any>(null);
 
   const connect = useCallback(async (url: string) => {
     dispatch({ type: 'SET_CONNECTING', payload: true });
@@ -166,6 +193,11 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
         console.error('Failed to start track monitoring:', error)
       );
       
+      // Start processor monitoring
+      startProcessorMonitoring(service).catch(error => 
+        console.error('Failed to start processor monitoring:', error)
+      );
+      
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: `Connection failed: ${error}` });
       setGrpcService(null);
@@ -191,6 +223,12 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
       setTrackSubscription(null);
     }
     
+    // Clean up processor subscription
+    if (processorSubscription) {
+      processorSubscription.unsubscribe();
+      setProcessorSubscription(null);
+    }
+    
     if (grpcService) {
       grpcService.disconnect();
     }
@@ -198,7 +236,54 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'SET_CONNECTED', payload: false });
     dispatch({ type: 'SET_TRACKS', payload: [] });
     dispatch({ type: 'SET_ENGINE_INFO', payload: null });
-  }, [grpcService, cpuSubscription, parameterSubscription, trackSubscription]);
+  }, [grpcService, cpuSubscription, parameterSubscription, trackSubscription, processorSubscription]);
+
+  const loadTrackProcessors = async (service: SushiGrpcService, trackId: number) => {
+    try {
+      // Get processors for this specific track
+      const processorsResponse = await service.getProcessorsOnTrack(trackId);
+      
+      // Get processor properties for send/return processors
+      const processors: Processor[] = [];
+      for (const proc of processorsResponse.processors) {
+        const processor: Processor = {
+          id: proc.id,
+          name: proc.name,
+          label: proc.label,
+          trackId: trackId
+        };
+
+        // Get properties for send and return processors
+        if (proc.label === 'Send' || proc.label === 'Return') {
+          try {
+            const properties = await service.getProcessorProperties(proc.id);
+            const processorProperties: { [key: string]: string } = {};
+            
+            for (const property of properties.properties || []) {
+              const propertyValue = await service.getPropertyValue(proc.id, property.name);
+              if (propertyValue) {
+                processorProperties[property.name] = propertyValue;
+              }
+            }
+            
+            processor.properties = processorProperties;
+          } catch (error) {
+            console.warn(`Failed to get properties for processor ${proc.id}:`, error);
+          }
+        }
+
+        processors.push(processor);
+      }
+
+      // Update processors for this track
+      dispatch({ 
+        type: 'UPDATE_TRACK_PROCESSORS', 
+        payload: { trackId, processors } 
+      });
+    } catch (error) {
+      console.error(`Failed to load processors for track ${trackId}:`, error);
+    }
+  };
 
   const loadRealTracks = async (service: SushiGrpcService) => {
     try {
@@ -404,6 +489,45 @@ export function SushiProvider({ children }: { children: React.ReactNode }) {
       console.error('Failed to subscribe to track changes:', error);
     }
   }, [trackSubscription]);
+
+  const startProcessorMonitoring = useCallback(async (service: SushiGrpcService) => {
+    // Clean up any existing subscription first
+    if (processorSubscription) {
+      processorSubscription.unsubscribe();
+    }
+    
+    // Subscribe to processor changes via streaming
+    try {
+      const observable = await service.subscribeToProcessorChanges();
+      const subscription = observable.subscribe({
+        next: (update: any) => {
+          // Handle processor updates (PROCESSOR_ADDED, PROCESSOR_DELETED)
+          if (update.action && update.processor && update.parentTrack) {
+            if (update.action === 1) { // PROCESSOR_ADDED
+              // Reload processors for the affected track
+              loadTrackProcessors(service, update.parentTrack.id);
+            } else if (update.action === 2) { // PROCESSOR_DELETED
+              // Remove processor from the affected track
+              dispatch({ 
+                type: 'REMOVE_PROCESSOR', 
+                payload: {
+                  trackId: update.parentTrack.id,
+                  processorId: update.processor.id
+                }
+              });
+            }
+          }
+        },
+        error: (error: any) => {
+          console.error('Processor subscription error:', error);
+        }
+      });
+      
+      setProcessorSubscription(subscription);
+    } catch (error) {
+      console.error('Failed to subscribe to processor changes:', error);
+    }
+  }, [processorSubscription]);
 
   const setParameterValue = useCallback(async (trackId: number, parameterId: number, value: number) => {
     if (!grpcService) return;

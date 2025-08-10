@@ -329,6 +329,11 @@ export class SushiGrpcService {
     return this.notificationController.SubscribeToTrackChanges(request);
   }
 
+  async subscribeToProcessorChanges(): Promise<Observable<any>> {
+    const request = {}; // Empty request for all processor changes
+    return this.notificationController.SubscribeToProcessorChanges(request);
+  }
+
   // Transport controls
   async play(): Promise<void> {
     try {

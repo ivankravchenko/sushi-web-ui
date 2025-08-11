@@ -1,0 +1,44 @@
+interface SushiLogoProps {
+  size?: number;
+  className?: string;
+}
+
+export function SushiLogo({ size = 48, className }: SushiLogoProps) {
+  return (
+    <svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 48 48" 
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* Rice base - oval shaped */}
+      <ellipse cx="24" cy="28" rx="18" ry="12" fill="#f8f6f0" stroke="#e2e0db" strokeWidth="1"/>
+      
+      {/* Rice texture details */}
+      <ellipse cx="24" cy="28" rx="16" ry="10" fill="none" stroke="#f0ede6" strokeWidth="0.5"/>
+      <circle cx="20" cy="26" r="0.8" fill="#ede9e0" opacity="0.6"/>
+      <circle cx="28" cy="30" r="0.6" fill="#ede9e0" opacity="0.6"/>
+      <circle cx="22" cy="32" r="0.5" fill="#ede9e0" opacity="0.6"/>
+      <circle cx="26" cy="25" r="0.7" fill="#ede9e0" opacity="0.6"/>
+      
+      {/* Salmon slice on top */}
+      <ellipse cx="24" cy="22" rx="15" ry="8" fill="#ff6b47" stroke="#e55a3c" strokeWidth="0.8"/>
+      
+      {/* Salmon texture lines */}
+      <path d="M12 22 Q18 20 24 22 Q30 24 36 22" stroke="#d4472a" strokeWidth="1" fill="none" opacity="0.7"/>
+      <path d="M14 24 Q20 22 26 24 Q32 26 34 24" stroke="#d4472a" strokeWidth="0.8" fill="none" opacity="0.5"/>
+      <path d="M16 20 Q22 18 28 20 Q32 22 35 20" stroke="#d4472a" strokeWidth="0.6" fill="none" opacity="0.4"/>
+      
+      {/* Salmon highlights */}
+      <ellipse cx="20" cy="20" rx="3" ry="1.5" fill="#ff8a6b" opacity="0.6"/>
+      <ellipse cx="28" cy="21" rx="2.5" ry="1.2" fill="#ff8a6b" opacity="0.5"/>
+      
+      {/* Subtle shadow under salmon */}
+      <ellipse cx="24" cy="23" rx="14" ry="6" fill="#000" opacity="0.1"/>
+      
+      {/* Overall depth shadow */}
+      <ellipse cx="24" cy="30" rx="17" ry="11" fill="none" stroke="#000" strokeWidth="0.3" opacity="0.2"/>
+    </svg>
+  );
+}

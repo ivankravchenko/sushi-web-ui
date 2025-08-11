@@ -15,6 +15,43 @@ import {
 import { useSushi } from '../contexts/SushiContext';
 import { getInternalPluginsByCategory, getAllCategories, getInternalPluginByUid } from '../data/sushiInternalPlugins';
 
+// Utility function to convert plugin name to snake_case
+function toSnakeCase(str: string): string {
+  return str
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+}
+
+// Generate unique processor name with auto-incrementing numbers
+function generateUniqueProcessorName(
+  baseName: string,
+  existingNames: Set<string>,
+  isReturnPlugin: boolean = false,
+  trackName: string = ''
+): string {
+  let candidateName = baseName;
+  
+  // Special handling for Return plugin
+  if (isReturnPlugin && trackName) {
+    const trackSnakeName = toSnakeCase(trackName);
+    candidateName = `${trackSnakeName}_return`;
+  }
+  
+  // Check if name is unique
+  if (!existingNames.has(candidateName)) {
+    return candidateName;
+  }
+  
+  // Find next available number
+  let counter = 2;
+  while (existingNames.has(`${candidateName}${counter}`)) {
+    counter++;
+  }
+  
+  return `${candidateName}${counter}`;
+}
+
 interface CreateProcessorDialogProps {
   open: boolean;
   onClose: () => void;
@@ -23,7 +60,7 @@ interface CreateProcessorDialogProps {
 }
 
 export function CreateProcessorDialog({ open, onClose, trackId, trackName }: CreateProcessorDialogProps) {
-  const { createProcessor } = useSushi();
+  const { createProcessor, state } = useSushi();
   const [processorName, setProcessorName] = useState('');
   const [processorUid, setProcessorUid] = useState('');
   const [pluginPath, setPluginPath] = useState('');
@@ -31,7 +68,45 @@ export function CreateProcessorDialog({ open, onClose, trackId, trackName }: Cre
   const [selectedInternalPlugin, setSelectedInternalPlugin] = useState('');
   const [pluginProperties, setPluginProperties] = useState<Record<string, string>>({});
   const [isCreating, setIsCreating] = useState(false);
+  const [userEditedName, setUserEditedName] = useState(false);
   const pluginTypeFieldRef = useRef<HTMLInputElement>(null);
+
+  // Get all existing processor and track names for uniqueness checking
+  const getAllExistingNames = (): Set<string> => {
+    const names = new Set<string>();
+    
+    // Add all track names
+    state.tracks.forEach(track => {
+      names.add(track.name.toLowerCase());
+      
+      // Add all processor names from all tracks
+      track.processors.forEach(processor => {
+        names.add(processor.name.toLowerCase());
+      });
+    });
+    
+    return names;
+  };
+
+  // Auto-generate processor name when plugin is selected
+  const generateProcessorName = (pluginUid: string) => {
+    const plugin = getInternalPluginByUid(pluginUid);
+    if (!plugin) return;
+    
+    const baseName = toSnakeCase(plugin.name);
+    const existingNames = getAllExistingNames();
+    const isReturnPlugin = pluginUid === 'sushi.testing.return';
+    
+    const uniqueName = generateUniqueProcessorName(
+      baseName,
+      existingNames,
+      isReturnPlugin,
+      trackName
+    );
+    
+    setProcessorName(uniqueName);
+    setUserEditedName(false); // Reset user edit flag
+  };
 
   // Form validation logic
   const isFormValid = () => {
@@ -64,6 +139,7 @@ export function CreateProcessorDialog({ open, onClose, trackId, trackName }: Cre
       setPluginType(0); // Default to Internal
       setSelectedInternalPlugin('');
       setPluginProperties({});
+      setUserEditedName(false);
       
       // Focus with delay to ensure dialog is fully rendered
       setTimeout(() => {
@@ -133,6 +209,8 @@ export function CreateProcessorDialog({ open, onClose, trackId, trackName }: Cre
                 setProcessorUid('');
                 setPluginPath('');
                 setPluginProperties({});
+                setProcessorName(''); // Clear processor name when plugin type changes
+                setUserEditedName(false);
               }}
             >
               <MenuItem value={0}>Internal</MenuItem>
@@ -151,8 +229,14 @@ export function CreateProcessorDialog({ open, onClose, trackId, trackName }: Cre
                 value={selectedInternalPlugin}
                 label="Internal Plugin"
                 onChange={(e) => {
-                  setSelectedInternalPlugin(e.target.value);
+                  const selectedUid = e.target.value;
+                  setSelectedInternalPlugin(selectedUid);
                   setPluginProperties({}); // Reset properties when plugin changes
+                  
+                  // Auto-generate processor name if user hasn't manually edited it
+                  if (!userEditedName && selectedUid) {
+                    generateProcessorName(selectedUid);
+                  }
                 }}
               >
                 <MenuItem value="" disabled>
@@ -219,11 +303,15 @@ export function CreateProcessorDialog({ open, onClose, trackId, trackName }: Cre
           <TextField
             label="Processor Name"
             value={processorName}
-            onChange={(e) => setProcessorName(e.target.value)}
+            onChange={(e) => {
+              setProcessorName(e.target.value);
+              setUserEditedName(true); // Mark that user has manually edited the name
+            }}
             onKeyPress={handleKeyPress}
             fullWidth
             required
             disabled={isCreating}
+            helperText="Auto-generated from plugin name. Edit to customize."
           />
         </Box>
       </DialogContent>

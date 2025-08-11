@@ -13,16 +13,20 @@ import {
   Tabs,
   Tab,
   IconButton,
-  Tooltip
+  Tooltip,
+  Popover,
+  Button
 } from '@mui/material';
 
-import { Settings as SettingsIcon, Close as CloseIcon } from '@mui/icons-material';
+import { Settings as SettingsIcon, Close as CloseIcon, PowerSettingsNew as BypassIcon } from '@mui/icons-material';
 import { sushiGrpcService } from '../services/SushiGrpcService';
 import type { ParametersResponse, PropertiesResponse } from '../services/SushiGrpcService';
 import type { ParameterInfo, PropertyInfo } from '../../codegen-grpc/sushi_rpc';
+import type { Processor } from '../contexts/SushiContext';
 import { useProcessorConfig } from '../contexts/ProcessorConfigContext';
 import { ProcessorConfigDialog } from './ProcessorConfigDialog';
 import type { ParameterDisplayConfig, PropertyDisplayConfig } from '../types/ProcessorConfig';
+import { getProcessorDisplayText } from '../utils/processorUtils';
 import { 
   createDefaultParameterConfig, 
   createDefaultPropertyConfig 
@@ -32,10 +36,7 @@ import {
 interface ProcessorDialogProps {
   open: boolean;
   onClose: () => void;
-  processor: {
-    id: number;
-    name: string;
-  };
+  processor: Processor;
 }
 
 interface ParameterState {
@@ -57,6 +58,13 @@ export function ProcessorDialog({ open, onClose, processor }: ProcessorDialogPro
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'primary' | 'secondary'>('primary');
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
+  const [bypassed, setBypassed] = useState(processor.bypassed ?? false);
+  
+  // Value input popover state
+  const [valueInputOpen, setValueInputOpen] = useState(false);
+  const [valueInputAnchor, setValueInputAnchor] = useState<HTMLElement | null>(null);
+  const [valueInputParam, setValueInputParam] = useState<ParameterState | null>(null);
+  const [valueInputText, setValueInputText] = useState('');
 
   // Get processor configuration context
   const { getProcessorConfig } = useProcessorConfig();
@@ -196,6 +204,20 @@ export function ProcessorDialog({ open, onClose, processor }: ProcessorDialogPro
                 setProperties(updatedProps);
               }
             }
+
+            // Poll bypass state
+            try {
+              const currentBypassState = await sushiGrpcService.getProcessorBypassState(processor.id);
+              setBypassed(prev => {
+                if (currentBypassState !== prev) {
+                  console.log(`Polling detected bypass state change: ${prev} -> ${currentBypassState}`);
+                  return currentBypassState;
+                }
+                return prev;
+              });
+            } catch (err) {
+              console.warn('Failed to poll bypass state:', err);
+            }
           } catch (err) {
             console.warn('Polling error:', err);
           }
@@ -280,6 +302,14 @@ export function ProcessorDialog({ open, onClose, processor }: ProcessorDialogPro
       }
       
       setProperties(propertyStates);
+
+      // Load bypass state
+      try {
+        const bypassState = await sushiGrpcService.getProcessorBypassState(processor.id);
+        setBypassed(bypassState);
+      } catch (err) {
+        console.warn('Failed to load processor bypass state:', err);
+      }
     } catch (err) {
       console.error('Failed to load processor data:', err);
       setError('Failed to load processor data');
@@ -328,6 +358,56 @@ export function ProcessorDialog({ open, onClose, processor }: ProcessorDialogPro
     } catch (err) {
       console.error('Failed to set property:', err);
     }
+  };
+
+  const handleBypassToggle = async () => {
+    console.log(`ProcessorDialog: Toggling bypass for processor ${processor.id} from ${bypassed} to ${!bypassed}`);
+    try {
+      const newBypassState = !bypassed;
+      setBypassed(newBypassState);
+      await sushiGrpcService.setProcessorBypassState(processor.id, newBypassState);
+      console.log(`ProcessorDialog: Successfully toggled bypass for processor ${processor.id}`);
+    } catch (err) {
+      console.error('ProcessorDialog: Failed to toggle processor bypass:', err);
+      // Revert state on error
+      setBypassed(!bypassed);
+    }
+  };
+
+  // Value input popover handlers
+  const handleSliderDoubleClick = (event: React.MouseEvent<HTMLElement>, param: ParameterState) => {
+    setValueInputAnchor(event.currentTarget);
+    setValueInputParam(param);
+    setValueInputText(param.value.toString());
+    setValueInputOpen(true);
+  };
+
+  const handleValueInputClose = () => {
+    setValueInputOpen(false);
+    setValueInputAnchor(null);
+    setValueInputParam(null);
+    setValueInputText('');
+  };
+
+  const handleValueInputSet = async () => {
+    if (!valueInputParam) return;
+    
+    const numericValue = parseFloat(valueInputText);
+    if (isNaN(numericValue)) return;
+    
+    const min = valueInputParam.info.minDomainValue ?? 0;
+    const max = valueInputParam.info.maxDomainValue ?? 1;
+    const clampedValue = Math.max(min, Math.min(max, numericValue));
+    
+    // Update UI immediately
+    setParameters(prev => prev.map((p: ParameterState) => 
+      p.id === valueInputParam.id ? { ...p, value: clampedValue } : p
+    ));
+    
+    // Send to Sushi
+    await handleParameterChange(valueInputParam.id, clampedValue);
+    
+    handleValueInputClose();
   };
 
 
@@ -465,10 +545,12 @@ export function ProcessorDialog({ open, onClose, processor }: ProcessorDialogPro
                   // Send to Sushi (async without await to avoid blocking UI)
                   handleParameterChange(param.id, domainValue);
                 }}
+                onDoubleClick={(event) => handleSliderDoubleClick(event, param)}
                 valueLabelDisplay="on"
                 valueLabelFormat={(val) => val.toFixed(info.type?.type === 2 ? 0 : 2)}
                 sx={{ 
                   width: '100%',
+                  cursor: 'pointer',
                   '& .MuiSlider-valueLabel': {
                     fontSize: '0.75rem'
                   }
@@ -549,17 +631,17 @@ export function ProcessorDialog({ open, onClose, processor }: ProcessorDialogPro
           <Box sx={{ 
             display: 'flex', 
             flexWrap: 'wrap', 
-            gap: 2, 
+            gap: 3, 
             mb: 3 
           }}>
             {tabParameters.map(({ param }) => (
               <Box 
                 key={param.id} 
                 sx={{ 
-                  flex: '1 1 calc(18% - 16px)', // Slightly narrower to prevent overlaps
-                  minWidth: '140px',
+                  flex: '1 1 calc(20% - 24px)', // 5 items per row with proper spacing
+                  minWidth: '160px',
                   minHeight: '80px',
-                  maxWidth: 'calc(18% - 16px)'
+                  maxWidth: 'calc(20% - 24px)'
                 }}
               >
                 {renderEnhancedParameterControl(param)}
@@ -573,16 +655,16 @@ export function ProcessorDialog({ open, onClose, processor }: ProcessorDialogPro
           <Box sx={{ 
             display: 'flex', 
             flexWrap: 'wrap', 
-            gap: 2 
+            gap: 3 
           }}>
             {tabProperties.map(({ prop }) => (
               <Box 
                 key={prop.id} 
                 sx={{ 
-                  flex: '1 1 calc(18% - 16px)', // Slightly narrower to prevent overlaps
-                  minWidth: '140px',
+                  flex: '1 1 calc(20% - 24px)', // 5 items per row with proper spacing
+                  minWidth: '160px',
                   minHeight: '80px',
-                  maxWidth: 'calc(18% - 16px)'
+                  maxWidth: 'calc(20% - 24px)'
                 }}
               >
                 {renderEnhancedPropertyControl(prop)}
@@ -606,34 +688,42 @@ export function ProcessorDialog({ open, onClose, processor }: ProcessorDialogPro
         }}
       >
         <DialogTitle>
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-            {/* Title and buttons in one line */}
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            {/* Title and action buttons */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <IconButton onClick={onClose} size="small">
                 <CloseIcon />
               </IconButton>
+              <Tooltip title={bypassed ? "Enable processor" : "Bypass processor"}>
+                <IconButton 
+                  onClick={handleBypassToggle} 
+                  size="small"
+                  color={bypassed ? "secondary" : "default"}
+                >
+                  <BypassIcon />
+                </IconButton>
+              </Tooltip>
               <Typography variant="h6">
-                {processor.name}
+                {getProcessorDisplayText(processor)}
               </Typography>
             </Box>
             
-            <Tooltip title="Configure processor display">
-              <IconButton onClick={() => setConfigDialogOpen(true)} size="small">
-                <SettingsIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
-          
-          {/* Tabs below title */}
-          <Box sx={{ mt: 2 }}>
-            <Tabs 
-              value={activeTab === 'primary' ? 0 : 1} 
-              onChange={(_, newValue) => setActiveTab(newValue === 0 ? 'primary' : 'secondary')}
-              centered
-            >
-              <Tab label={config.primaryTabName} />
-              <Tab label={config.secondaryTabName} />
-            </Tabs>
+            {/* Tabs and settings button grouped on the right */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Tabs 
+                value={activeTab === 'primary' ? 0 : 1} 
+                onChange={(_, newValue) => setActiveTab(newValue === 0 ? 'primary' : 'secondary')}
+              >
+                <Tab label={config.primaryTabName} />
+                <Tab label={config.secondaryTabName} />
+              </Tabs>
+              
+              <Tooltip title="Configure processor display">
+                <IconButton onClick={() => setConfigDialogOpen(true)} size="small">
+                  <SettingsIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
           </Box>
         </DialogTitle>
         
@@ -680,6 +770,55 @@ export function ProcessorDialog({ open, onClose, processor }: ProcessorDialogPro
         parameters={parameters}
         properties={properties}
       />
+
+      {/* Value Input Popover */}
+      <Popover
+        open={valueInputOpen}
+        anchorEl={valueInputAnchor}
+        onClose={handleValueInputClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        <Box sx={{ p: 2, minWidth: 200 }}>
+          <Typography variant="subtitle2" sx={{ mb: 1 }}>
+            Enter Value for {valueInputParam?.info.label || valueInputParam?.info.name}
+          </Typography>
+          <TextField
+            size="small"
+            type="number"
+            value={valueInputText}
+            onChange={(e) => setValueInputText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleValueInputSet();
+              } else if (e.key === 'Escape') {
+                handleValueInputClose();
+              }
+            }}
+            inputProps={{
+              min: valueInputParam?.info.minDomainValue ?? 0,
+              max: valueInputParam?.info.maxDomainValue ?? 1,
+              step: valueInputParam?.info.type?.type === 2 ? 1 : 0.01
+            }}
+            sx={{ mb: 1, width: '100%' }}
+            autoFocus
+          />
+          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+            <Button size="small" onClick={handleValueInputClose}>
+              Cancel
+            </Button>
+            <Button size="small" variant="contained" onClick={handleValueInputSet}>
+              Set
+            </Button>
+          </Box>
+        </Box>
+      </Popover>
     </>
   );
 }

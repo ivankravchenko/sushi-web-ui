@@ -328,6 +328,31 @@ export class SushiGrpcService {
     return this.notificationController.SubscribeToPropertyUpdates(request);
   }
 
+  async getProcessorBypassState(processorId: number): Promise<boolean> {
+    try {
+      const response = await this.audioGraphController.GetProcessorBypassState({
+        id: processorId
+      });
+      return response.value ?? false;
+    } catch (error) {
+      console.warn('Failed to get processor bypass state:', error);
+      return false;
+    }
+  }
+
+  async setProcessorBypassState(processorId: number, bypassed: boolean): Promise<void> {
+    try {
+      await this.audioGraphController.SetProcessorBypassState({
+        processor: { id: processorId },
+        value: bypassed
+      });
+      console.log(`Set bypass state for processor ${processorId} to ${bypassed}`);
+    } catch (error) {
+      console.error('Failed to set processor bypass state:', error);
+      throw error;
+    }
+  }
+
   // Track management methods
   async createTrack(name: string, channels: number): Promise<void> {
     await this.audioGraphController.CreateTrack({ name, channels });

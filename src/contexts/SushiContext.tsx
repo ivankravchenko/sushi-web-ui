@@ -13,6 +13,7 @@ export interface Processor {
   name: string;
   label: string;
   trackId: number;
+  bypassed?: boolean;
   properties?: { [key: string]: string };
 }
 

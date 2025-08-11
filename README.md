@@ -2,6 +2,48 @@
 
 A modern web-based user interface for controlling Sushi (Elk Audio OS) via gRPC-Web. Built with React, TypeScript, Vite, and Material-UI.
 
+## About This Project
+
+This project represents my first complete pure "vibe coding" experiment. The goal was to measure whether AI-assisted development could make me 10x more productive. The answer is definitively yes, though it requires full supervision and careful guidance of the AI to produce exactly what's needed and fix bugs as they arise.
+
+Built entirely using Windsurf with Claude Sonnet 4, completed over two weekend evenings. **I wrote 0 lines of code myself** - everything was generated through natural language conversations with the AI, from initial setup to final deployment.
+
+**Development Cost**: Used 207 Windsurf credits (approximately $6) for the entire project, including initial development, debugging, UI refinements, and final deployment setup.
+
+## Screenshots
+
+### Main Mixer Interface
+![Main Mixer Interface](docs/screenshots/main-mixer-view.png)
+*The main mixer interface showing two tracks (main and aux) with processors, volume faders, and mute/solo controls. The toolbar displays connection status, CPU usage, and collapsible system info.*
+
+### Track Creation
+![Track Creation](docs/screenshots/create-track.png)
+*Creating a new track with configurable name and channel count (mono/stereo).*
+
+### Processor Creation
+![Processor Creation](docs/screenshots/create-processor-1.png)
+*Adding processors to tracks with support for internal plugins, VST plugins, and Brickworks effects.*
+
+### Plugin Selection
+![Plugin Selection](docs/screenshots/create-processor-choose-plugin.png)
+*Comprehensive plugin browser showing available internal plugins, audio I/O processors, and Brickworks effects with detailed descriptions.*
+
+### Parameter Control Dialog
+![Parameter Control](docs/screenshots/plugin-params-dialog.png)
+*Real-time parameter editing interface with sliders, numeric input, and bypass controls.*
+
+### Parameter Tabs - Primary Controls
+![Parameter Tab 1](docs/screenshots/plugin-params-dialog-tab1.png)
+*Primary parameter controls showing main effect parameters with real-time updates.*
+
+### Parameter Tabs - Secondary Controls  
+![Parameter Tab 2](docs/screenshots/plugin-params-dialog-tab2.png)
+*Secondary parameter controls for advanced effect configuration.*
+
+### Parameter Configuration Editor
+![Parameter Configuration](docs/screenshots/plugin-params-dialog-editor.png)
+*Advanced parameter configuration interface allowing customization of display names, UI components, and parameter organization with drag-and-drop reordering.*
+
 ## Features
 
 - **Real-time Connection**: Connect to Sushi via gRPC-Web proxy

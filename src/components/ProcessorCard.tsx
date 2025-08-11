@@ -75,12 +75,9 @@ export function ProcessorCard({ processor, trackId, onDeleteProcessor }: Process
 
   const handleBypassToggle = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log(`ProcessorCard: Toggling bypass for processor ${processor.id} from ${bypassed} to ${!bypassed}`);
     try {
-      const newBypassState = !bypassed;
-      setBypassed(newBypassState);
-      await sushiGrpcService.setProcessorBypassState(processor.id, newBypassState);
-      console.log(`ProcessorCard: Successfully toggled bypass for processor ${processor.id}`);
+      await sushiGrpcService.setProcessorBypassState(processor.id, !bypassed);
+      setBypassed(!bypassed);
     } catch (error) {
       console.error('ProcessorCard: Failed to toggle processor bypass:', error);
       // Revert state on error

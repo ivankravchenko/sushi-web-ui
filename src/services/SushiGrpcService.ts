@@ -346,7 +346,7 @@ export class SushiGrpcService {
         processor: { id: processorId },
         value: bypassed
       });
-      console.log(`Set bypass state for processor ${processorId} to ${bypassed}`);
+
     } catch (error) {
       console.error('Failed to set processor bypass state:', error);
       throw error;

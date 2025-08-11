@@ -87,9 +87,7 @@ export function ProcessorDialog({ open, onClose, processor }: ProcessorDialogPro
           const observable = await sushiGrpcService.subscribeToParameterUpdates();
           subscription = observable.subscribe({
             next: (update: any) => {
-              console.log('Parameter update received:', update);
-              console.log('Parameter object keys:', Object.keys(update.parameter || {}));
-              console.log('Parameter object:', JSON.stringify(update.parameter, null, 2));
+
               
               // ParameterUpdate has: parameter (ParameterIdentifier), domainValue
               const param = update.parameter;
@@ -97,13 +95,12 @@ export function ProcessorDialog({ open, onClose, processor }: ProcessorDialogPro
                 const parameterId = param.parameterId; // ParameterIdentifier.parameterId
                 const domainValue = update.domainValue;
                 
-                console.log(`Processor ID match: ${param.processorId} === ${processor.id}`);
-                console.log(`Parameter ID: ${parameterId}, Domain value: ${domainValue}`);
+
                 
                 // Update parameter with the domain value directly
                 setParameters(prev => prev.map((p: ParameterState) => {
                   if (p.id === parameterId) {
-                    console.log(`Updated parameter ${parameterId}: ${p.value} -> ${domainValue}`);
+
                     return { ...p, value: domainValue };
                   }
                   return p;
@@ -122,9 +119,7 @@ export function ProcessorDialog({ open, onClose, processor }: ProcessorDialogPro
           const observable = await sushiGrpcService.subscribeToPropertyUpdates();
           propertySubscription = observable.subscribe({
             next: (update: any) => {
-              console.log('Property update received:', update);
-              console.log('Property object keys:', Object.keys(update.property || {}));
-              console.log('Property object:', JSON.stringify(update.property, null, 2));
+
               
               // PropertyValue has: property (PropertyIdentifier), value
               const prop = update.property;
@@ -132,13 +127,12 @@ export function ProcessorDialog({ open, onClose, processor }: ProcessorDialogPro
                 const propertyId = prop.propertyId; // PropertyIdentifier.propertyId
                 const value = update.value;
                 
-                console.log(`Property Processor ID match: ${prop.processorId} === ${processor.id}`);
-                console.log(`Property ID: ${propertyId}, Value: ${value}`);
+
                 
                 // Update property with the new value
                 setProperties(prev => prev.map((p: PropertyState) => {
                   if (p.id === propertyId) {
-                    console.log(`Updated property ${propertyId}: ${p.value} -> ${value}`);
+
                     return { ...p, value: value };
                   }
                   return p;
@@ -168,7 +162,7 @@ export function ProcessorDialog({ open, onClose, processor }: ProcessorDialogPro
                 const currentDomainValue = await sushiGrpcService.getParameterValueInDomain(processor.id, param.id);
                 if (currentDomainValue !== null) {
                   if (Math.abs(currentDomainValue - param.value) > 0.001) {
-                    console.log(`Polling detected change for parameter ${param.id}: ${param.value} -> ${currentDomainValue}`);
+
                     hasParamChanges = true;
                   }
                   updatedParams.push({ ...param, value: currentDomainValue });
@@ -178,7 +172,7 @@ export function ProcessorDialog({ open, onClose, processor }: ProcessorDialogPro
               }
               
               if (hasParamChanges) {
-                console.log('Polling updating parameters:', updatedParams);
+
                 setParameters(updatedParams);
               }
             }
@@ -191,7 +185,7 @@ export function ProcessorDialog({ open, onClose, processor }: ProcessorDialogPro
               for (const prop of properties) {
                 const currentValue = await sushiGrpcService.getPropertyValue(processor.id, prop.info.name);
                 if (currentValue !== null && currentValue !== prop.value) {
-                  console.log(`Polling detected change for property ${prop.info.name}: ${prop.value} -> ${currentValue}`);
+
                   hasPropChanges = true;
                   updatedProps.push({ ...prop, value: currentValue });
                 } else {
@@ -200,7 +194,7 @@ export function ProcessorDialog({ open, onClose, processor }: ProcessorDialogPro
               }
               
               if (hasPropChanges) {
-                console.log('Polling updating properties:', updatedProps);
+
                 setProperties(updatedProps);
               }
             }
@@ -210,7 +204,7 @@ export function ProcessorDialog({ open, onClose, processor }: ProcessorDialogPro
               const currentBypassState = await sushiGrpcService.getProcessorBypassState(processor.id);
               setBypassed(prev => {
                 if (currentBypassState !== prev) {
-                  console.log(`Polling detected bypass state change: ${prev} -> ${currentBypassState}`);
+
                   return currentBypassState;
                 }
                 return prev;
@@ -361,12 +355,9 @@ export function ProcessorDialog({ open, onClose, processor }: ProcessorDialogPro
   };
 
   const handleBypassToggle = async () => {
-    console.log(`ProcessorDialog: Toggling bypass for processor ${processor.id} from ${bypassed} to ${!bypassed}`);
     try {
-      const newBypassState = !bypassed;
-      setBypassed(newBypassState);
-      await sushiGrpcService.setProcessorBypassState(processor.id, newBypassState);
-      console.log(`ProcessorDialog: Successfully toggled bypass for processor ${processor.id}`);
+      await sushiGrpcService.setProcessorBypassState(processor.id, !bypassed);
+      setBypassed(!bypassed);
     } catch (err) {
       console.error('ProcessorDialog: Failed to toggle processor bypass:', err);
       // Revert state on error
